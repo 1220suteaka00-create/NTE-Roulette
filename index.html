@@ -1,0 +1,2042 @@
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NTEキャラ万能ルーレット</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f8f8;
+    --surface2: #efefef;
+    --border: #dddddd;
+    --text: #1a1a1a;
+    --text-muted: #888888;
+    --accent: #c0a060;
+    --gas: #60c0a0;
+    --polymer: #a060c0;
+    --solid: #6090c0;
+    --plasma: #c06060;
+    --liquid: #60a0c0;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: clamp(20px, 4vw, 28px);
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .tag-気体    { background: var(--gas);     color: #000; }
+  .tag-重合体  { background: var(--polymer); color: #fff; }
+  .tag-ソリッド { background: var(--solid);  color: #fff; }
+  .tag-プラズマ { background: var(--plasma); color: #fff; }
+  .tag-リキッド { background: var(--liquid); color: #fff; }
+
+  #drop-zone {
+    border: 2px dashed var(--border);
+    padding: 40px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    text-align: center;
+    margin-bottom: 24px;
+    color: var(--text-muted);
+  }
+  #drop-zone:hover { border-color: var(--accent); background: #ffffff; color: var(--text); }
+  #drop-zone strong { color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .card h3 {
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  #attr-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+  }
+  .attr-tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all .15s;
+  }
+  .attr-tab.active { color: #000; font-weight: 700; }
+  .attr-tab[data-attr="全て"].active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .attr-tab[data-attr="気体"].active    { background: var(--gas);     border-color: var(--gas); }
+  .attr-tab[data-attr="重合体"].active  { background: var(--polymer); border-color: var(--polymer); color: #fff; }
+  .attr-tab[data-attr="ソリッド"].active { background: var(--solid);  border-color: var(--solid); color: #fff; }
+  .attr-tab[data-attr="プラズマ"].active { background: var(--plasma); border-color: var(--plasma); color: #fff; }
+  .attr-tab[data-attr="リキッド"].active { background: var(--liquid); border-color: var(--liquid); color: #fff; }
+
+  #textList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  #textList label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  #textList label:hover { border-color: var(--accent); }
+  #textList input[type=checkbox] { accent-color: var(--accent); }
+
+  /* 弧盤オフ時のオーバーレイ */
+  #koban-content {
+    transition: opacity .2s;
+  }
+  #koban-content.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    user-select: none;
+  }
+  .koban-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  /* トグルスイッチ */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .toggle-slider:before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .2s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
+  .toggle-label-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .toggle-status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .toggle-status.on  { background: #e8f5e0; color: #4a9a2a; }
+  .toggle-status.off { background: #f5e0e0; color: #a04040; }
+
+  .images {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0;
+  }
+  .thumb {
+    width: 130px; border: 2px solid var(--border); border-radius: 10px;
+    overflow: hidden; background: #ffffff; position: relative;
+    transition: opacity .2s;
+  }
+  .thumb img { width: 100%; height: 110px; object-fit: cover; display: block; }
+  .thumb .name { font-size: 12px; padding: 5px 7px; color: var(--text); font-weight: 700; word-break: break-all; line-height: 1.5; text-align: center; }
+  .thumb .attr-badge { font-size: 9px; padding: 2px 6px; border-radius: 0 0 0 8px; position: absolute; top: 0; right: 0; font-weight: 700; }
+  .thumb .rank-badge { font-size: 9px; padding: 2px 5px; border-radius: 0 0 8px 0; position: absolute; top: 0; left: 0; font-weight: 700; }
+  .thumb .rank-badge.rank-5 { background: #f5c518; color: #333; }
+  .thumb .rank-badge.rank-4 { background: #9b59b6; color: #000; }
+  .thumb.temporary-excluded { opacity: 0.45; }
+  .thumb.temporary-excluded::after {
+    content: '除外中';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 50, 50, 0.88);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    letter-spacing: 0.05em;
+  }
+  .thumb .thumb-controls {
+    padding: 5px 6px; background: var(--surface2); border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 4px;
+  }
+  .thumb .thumb-toggle-label {
+    font-size: 10px; color: var(--text-muted); flex-shrink: 0;
+  }
+  /* サムネ用小型トグル */
+  .thumb-toggle-switch {
+    position: relative; display: inline-block; width: 32px; height: 18px; flex-shrink: 0;
+  }
+  .thumb-toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .thumb-toggle-slider {
+    position: absolute; inset: 0; background: #ccc; border-radius: 18px; cursor: pointer; transition: background .2s;
+  }
+  .thumb-toggle-slider:before {
+    content: ''; position: absolute; width: 12px; height: 12px; left: 3px; top: 3px;
+    background: #fff; border-radius: 50%; transition: transform .2s;
+  }
+  .thumb-toggle-switch input:checked + .thumb-toggle-slider { background: var(--accent); }
+  .thumb-toggle-switch input:checked + .thumb-toggle-slider:before { transform: translateX(14px); }
+  /* オフ状態のサムネ */
+  .thumb.img-disabled { opacity: 0.38; }
+  .thumb.img-disabled::after {
+    content: 'OFF'; position: absolute; top: 4px; left: 4px;
+    background: #888; color: #fff; font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: 700;
+  }
+
+  .controls-row {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px;
+  }
+  .toggle-label {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer;
+  }
+  .toggle-label input { accent-color: var(--accent); }
+
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .radio-group label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 8px;
+    background: #ffffff; border: 1px solid var(--border);
+    font-size: 13px; cursor: pointer; transition: border-color .15s;
+  }
+  .radio-group input[type=radio] { accent-color: var(--accent); }
+  .radio-group label:has(input:checked) { border-color: var(--accent); color: var(--accent); }
+
+  .radio-group label:has(input[value="tanki"]:checked) {
+    border-color: #5a8fd4; color: #5a8fd4;
+  }
+
+  .btn {
+    padding: 11px 24px; font-size: 14px; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: 700; letter-spacing: 0.05em; transition: opacity .15s, transform .1s;
+  }
+  .btn:hover { opacity: .85; transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+  .btn-ghost:hover { border-color: var(--text-muted); color: var(--text); }
+
+  #result { margin-top: 32px; }
+  #result h2 { color: var(--accent); font-size: 18px; margin-bottom: 20px; letter-spacing: 0.08em; }
+
+  .pair-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .pair-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeUp .4s ease both;
+  }
+  .pair-card:nth-child(2) { animation-delay: .08s; }
+  .pair-card:nth-child(3) { animation-delay: .16s; }
+  .pair-card:nth-child(4) { animation-delay: .24s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .pair-card .pair-attr {
+    padding: 8px 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pair-card img {
+    width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+  }
+  .pair-card .pair-body { padding: 12px 14px; }
+  .pair-card .pair-img-name { font-size: 14px; color: #111; font-weight: 700; margin-bottom: 6px; }
+  .pair-card .pair-text-name { font-size: 15px; font-weight: 700; color: #111; }
+  .pair-card .no-image { width: 100%; aspect-ratio: 4/3; background: #ffffff; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; }
+
+  .solo-section { margin-bottom: 20px; }
+  .solo-section h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+  .solo-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .solo-item {
+    padding: 8px 14px; border-radius: 8px; background: #ffffff;
+    border: 1px solid var(--border); font-size: 13px;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f0f0f0; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── モバイル対応 ── */
+  @media (max-width: 600px) {
+    body {
+      padding: 16px 10px 80px;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      padding: 14px 14px;
+      margin-bottom: 14px;
+    }
+
+    /* ドロップゾーン → タップ操作向けに高さを抑える */
+    #drop-zone {
+      padding: 24px 16px;
+      font-size: 14px;
+    }
+
+    /* サムネイルを小さく */
+    .thumb {
+      width: 90px;
+    }
+    .thumb img {
+      height: 72px;
+    }
+
+    /* 弧盤リストを1列に */
+    #textList {
+      grid-template-columns: 1fr;
+      max-height: 240px;
+    }
+    #textList label {
+      padding: 10px 10px;
+      font-size: 14px;
+      min-height: 44px; /* タップしやすい高さ */
+    }
+
+    /* タイプタブ */
+    .attr-tab {
+      padding: 8px 12px;
+      font-size: 13px;
+      min-height: 36px;
+    }
+
+    /* ラジオグループを縦並びに */
+    .radio-group {
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+    .radio-group label {
+      padding: 10px 14px;
+      font-size: 14px;
+      min-height: 44px;
+    }
+
+    /* controls-rowのspan（ラベル）を上に出す */
+    .controls-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    /* ボタンをフル幅に */
+    .btn {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 15px;
+      text-align: center;
+    }
+    /* ただしゴーストボタン（リセット系）は横並びのままにしたい場合もあるので制御 */
+    #normal-controls, #tanki-controls {
+      flex-direction: column;
+      gap: 8px;
+    }
+    #normal-controls .btn-ghost,
+    #tanki-controls .btn-ghost {
+      width: 100%;
+    }
+
+    /* 弧盤追加フォーム */
+    #new-text-name {
+      width: 100%;
+      font-size: 16px; /* iOSズーム防止 */
+    }
+    #new-text-attr {
+      font-size: 16px;
+    }
+
+    /* ペアカードを1列に */
+    .pair-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    /* 結果見出し */
+    #result h2 {
+      font-size: 16px;
+    }
+
+    /* サムネコントロール */
+    .thumb .thumb-attr-select { font-size: 11px; }
+    .thumb .thumb-toggle-label { font-size: 11px; }
+
+    /* 単騎結果カード */
+    #tanki-result > div,
+    #tanki-result-main > div {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 12px;
+    }
+    #tanki-result img,
+    #tanki-result-main img {
+      width: 100% !important;
+      height: 160px !important;
+      border-radius: 8px;
+    }
+
+    /* toggle-label（除外チェック） */
+    .toggle-label {
+      font-size: 14px;
+      min-height: 44px;
+      width: 100%;
+    }
+
+    /* 全選択・全解除ボタン行 */
+    .card > div[style*="display:flex"][style*="gap:8px"] {
+      flex-wrap: wrap;
+    }
+
+    /* koban-toggle-row */
+    .koban-toggle-row {
+      gap: 12px;
+    }
+    .toggle-label-text {
+      font-size: 15px;
+    }
+
+    /* ソロリスト */
+    .solo-list {
+      flex-direction: column;
+    }
+    .solo-item {
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+  }
+
+  /* ─── 登録モーダル ─── */
+  #register-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #register-overlay.active { display: flex; }
+  #register-modal {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%; max-width: 420px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    animation: fadeUp .25s ease;
+  }
+  #register-modal .modal-header {
+    background: var(--accent);
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #register-modal .modal-header h3 {
+    color: #000; font-size: 15px; letter-spacing: 0.05em; margin: 0;
+  }
+  #register-modal .modal-header .modal-counter {
+    font-size: 12px; color: #000; opacity: 0.7;
+  }
+  #register-modal .modal-body {
+    padding: 18px;
+  }
+  #register-modal .modal-preview {
+    width: 100%; max-height: 200px; object-fit: cover;
+    border-radius: 10px; margin-bottom: 16px;
+    border: 2px solid var(--border);
+    display: block;
+  }
+  #register-modal .modal-field {
+    margin-bottom: 14px;
+  }
+  #register-modal .modal-field label {
+    display: block; font-size: 12px; color: var(--text-muted);
+    margin-bottom: 6px; font-weight: 700;
+  }
+  #register-modal .modal-field input,
+  #register-modal .modal-field select {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-size: 15px; outline: none;
+  }
+  #register-modal .modal-field input:focus,
+  #register-modal .modal-field select:focus {
+    border-color: var(--accent);
+  }
+  #register-modal .modal-actions {
+    display: flex; gap: 10px; padding: 0 18px 18px;
+  }
+  #register-modal .modal-actions .btn {
+    flex: 1;
+  }
+  .modal-skip-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); font-size: 13px;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="site-header" style="
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 14px;
+  margin-bottom: 32px;
+  padding: 48px 20px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+">
+  <div style="position:absolute;inset:0;background:rgba(0,0,30,0.45);border-radius:14px;"></div>
+  <h1 style="
+    position:relative;z-index:1;
+    color:#fff;
+    font-size:clamp(20px,4vw,28px);
+    letter-spacing:0.1em;
+    margin:0 0 12px;padding:0;border:none;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+  ">NTEキャラ万能ルーレット</h1>
+
+</div>
+
+
+
+
+<!-- 使い方説明 -->
+<div class="card" style="margin-bottom:24px;">
+  <h3>📖 使い方・仕様</h3>
+  <div style="font-size:13px;color:var(--text);line-height:2;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🖼 キャラクターの登録</p>
+    <p>「ここをタップして画像を選択」から画像を選ぶと登録画面が開きます。キャラ名・タイプ・ランク（A / S）を入力して「登録」を押すと一覧に追加されます。複数枚選択すると1枚ずつ順番に登録できます。登録データはブラウザに自動保存されるため、次回以降は開くだけで使えます（※ブラウザのキャッシュをクリアすると消えます）。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">📝 弧盤候補</p>
+    <p>抽出時にキャラとペアになるテキスト（弧盤）の候補一覧です。チェックボックスで使用する候補を選択できます。右上のトグルで弧盤候補ごとオン/オフが可能です。オフにした場合は画像のみで抽出されます。候補の追加・削除も自由にできます。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⚙️ 抽出設定</p>
+    <p>
+      <strong>通常抽出</strong>：タイプが一致するキャラと弧盤をランダムに1〜4組抽出します。<br>
+      <strong>前半＋後半同時抽出</strong>：キャラ・弧盤をそれぞれ前半・後半に分けて抽出します。<br>
+      <strong>4人編成</strong>：キャラを4人固定で抽出します。「前半後半に対応する」をオンにすると前半4人・後半4人の計8人が抽出されます。<br>
+      <strong>🗡️ 単騎抽出</strong>：全キャラの中から1体だけ抽出します。弧盤候補がオンの場合はタイプ一致の弧盤も同時に抽出されます。
+    </p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⭐ キャラクター設定</p>
+    <p>「全画像」「Aのみ」「Sのみ」で抽出対象を絞り込めます。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🔄 除外機能</p>
+    <p>「一度抽出した項目を次の1回だけ除外する」をオンにすると、抽出されたキャラは次の1回は必ず除外されます。単騎抽出モードでも同様に機能し、オフの場合は全モードで完全ランダム（被りあり）になります。除外リセットボタンで手動リセットも可能です。</p>
+
+  </div>
+</div>
+
+<!-- キャラ登録モーダル -->
+<div id="register-overlay">
+  <div id="register-modal">
+    <div class="modal-header">
+      <h3>📸 キャラクター登録</h3>
+      <span class="modal-counter" id="modal-counter"></span>
+    </div>
+    <div class="modal-body">
+      <img id="modal-preview" class="modal-preview" src="" alt="プレビュー">
+      <div class="modal-field">
+        <label>キャラ名 *</label>
+        <input type="text" id="modal-name" placeholder="例：ちぃちゃん">
+      </div>
+      <div class="modal-field">
+        <label>タイプ *</label>
+        <select id="modal-attr">
+          <option value="">-- 選択してください --</option>
+          <option value="気体">気体</option>
+          <option value="重合体">重合体</option>
+          <option value="ソリッド">ソリッド</option>
+          <option value="プラズマ">プラズマ</option>
+          <option value="リキッド">リキッド</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>ランク</label>
+        <select id="modal-rank">
+          <option value="">-- 選択してください（任意）--</option>
+          <option value="5">S（★5相当）</option>
+          <option value="4">A（★4相当）</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn modal-skip-btn" onclick="skipRegister()">キャンセル</button>
+      <button class="btn btn-primary" onclick="confirmRegister()">✅ 登録</button>
+    </div>
+  </div>
+</div>
+
+<!-- ドロップゾーン -->
+<div id="drop-zone">
+  <label for="file-input" style="cursor:pointer;display:block;">
+    <strong>ここをタップして画像を選択</strong><br>
+    <span style="font-size:13px;line-height:1.8;">
+      📝 <strong>自動認識ファイル名形式：</strong><code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク.jpg</code><br>
+      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_5.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_S.jpg</code><br>
+      タイプ：気体 / 重合体 / ソリッド / プラズマ / リキッド　ランク：4 or A（Aランク）/ 5 or S（Sランク）（省略可）<br>
+      <span style="color:#aaa;">※ファイル名に関係なく、登録画面で手動入力・修正もできます</span>
+    </span>
+  </label>
+  <input type="file" id="file-input" multiple="" accept="image/*" style="display:none;">
+</div>
+
+<!-- アップロード済み -->
+<div class="card">
+  <h3>キャラクター一覧</h3>
+  <div id="uploaded" class="images"><p style="color:var(--text-muted);font-size:13px;">まだ画像がありません</p></div>
+
+  <!-- 一括削除エリア -->
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+    <button class="btn btn-ghost" style="border-color:#c44;color:#c44;font-weight:700;" onclick="deleteAllImages()">🗑 全キャラ一括削除</button>
+  </div>
+</div>
+
+<!-- 弧盤候補 -->
+<div class="card" id="koban-section">
+  <h3>弧盤候補</h3>
+
+  <!-- オン/オフトグル -->
+  <div class="koban-toggle-row">
+    <label class="toggle-switch">
+      <input type="checkbox" id="koban-toggle" checked="" onchange="handleKobanToggle()">
+      <span class="toggle-slider"></span>
+    </label>
+    <span class="toggle-label-text">弧盤候補を使用する</span>
+    <span class="toggle-status on" id="koban-status">ON</span>
+  </div>
+
+  <!-- 弧盤コンテンツ（オフ時に淡色化） -->
+  <div id="koban-content">
+    <div id="attr-tabs">
+      <div class="attr-tab active" data-attr="全て" onclick="filterTextList('全て')">全て</div>
+      <div class="attr-tab" data-attr="気体" onclick="filterTextList('気体')">気体</div>
+      <div class="attr-tab" data-attr="重合体" onclick="filterTextList('重合体')">重合体</div>
+      <div class="attr-tab" data-attr="ソリッド" onclick="filterTextList('ソリッド')">ソリッド</div>
+      <div class="attr-tab" data-attr="プラズマ" onclick="filterTextList('プラズマ')">プラズマ</div>
+      <div class="attr-tab" data-attr="リキッド" onclick="filterTextList('リキッド')">リキッド</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="selectAllVisible()">✅ 表示中を全選択</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="deselectAllVisible()">☐ 表示中を全解除</button>
+      <span id="check-count" style="font-size:12px;color:var(--text-muted);margin-left:4px;">36 / 36 件選択中</span>
+    </div>
+    <div id="textList"><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="お散歩ワンワン" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>お散歩ワンワン</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('お散歩ワンワン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="椿会" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>椿会</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('椿会');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="休息日" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>休息日</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('休息日');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="プリペア" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>プリペア</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('プリペア');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="熱狂の渦" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>熱狂の渦</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('熱狂の渦');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="漆黒の青春妄想" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>漆黒の青春妄想</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('漆黒の青春妄想');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="思考ニャン" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>思考ニャン</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('思考ニャン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="炎魂ハリケーン" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>炎魂ハリケーン</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('炎魂ハリケーン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="永遠のワルツ" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>永遠のワルツ</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('永遠のワルツ');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="ヘテロシティの平穏" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>ヘテロシティの平穏</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('ヘテロシティの平穏');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="現実の避難所" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>現実の避難所</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('現実の避難所');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="仮面の下の涙" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>仮面の下の涙</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('仮面の下の涙');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="鯨の歌" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>鯨の歌</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('鯨の歌');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="時間外を行く" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>時間外を行く</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('時間外を行く');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="「ラスト・ローズ」" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>「ラスト・ローズ」</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('「ラスト・ローズ」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="「傾世の雨」" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>「傾世の雨」</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('「傾世の雨」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="「銀河の残像」" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>「銀河の残像」</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('「銀河の残像」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="忘れな傘" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>忘れな傘</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('忘れな傘');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="光のカーニバル" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>光のカーニバル</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('光のカーニバル');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="輝かしい日々" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>輝かしい日々</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('輝かしい日々');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="忘れられし者" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>忘れられし者</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('忘れられし者');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="オラオラ!" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>オラオラ!</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('オラオラ!');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="ひらめきデスゲーム" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>ひらめきデスゲーム</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('ひらめきデスゲーム');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="呪われた出会い" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>呪われた出会い</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('呪われた出会い');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="頭上に注意!" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>頭上に注意!</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('頭上に注意!');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="空域確保開始" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>空域確保開始</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('空域確保開始');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="言葉にできない" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>言葉にできない</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('言葉にできない');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="抜刀" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>抜刀</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('抜刀');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="いつかは終わる" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>いつかは終わる</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('いつかは終わる');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="愚者が春を蒔く" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>愚者が春を蒔く</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('愚者が春を蒔く');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="歪んだ城の呼び声" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>歪んだ城の呼び声</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('歪んだ城の呼び声');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="危険なゲーム" data-attr="重合体" checked="" onchange="updateCheckCount()">
+        <span>危険なゲーム</span>
+        <span class="tag tag-重合体">重合体</span>
+        <button onclick="removeTextCandidate('危険なゲーム');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="成功への第一歩" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
+        <span>成功への第一歩</span>
+        <span class="tag tag-ソリッド">ソリッド</span>
+        <button onclick="removeTextCandidate('成功への第一歩');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="いつも笑顔で" data-attr="気体" checked="" onchange="updateCheckCount()">
+        <span>いつも笑顔で</span>
+        <span class="tag tag-気体">気体</span>
+        <button onclick="removeTextCandidate('いつも笑顔で');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="「私たち」" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
+        <span>「私たち」</span>
+        <span class="tag tag-プラズマ">プラズマ</span>
+        <button onclick="removeTextCandidate('「私たち」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
+        <input type="checkbox" class="textCandidate" value="「電音」カーニバル" data-attr="リキッド" checked="" onchange="updateCheckCount()">
+        <span>「電音」カーニバル</span>
+        <span class="tag tag-リキッド">リキッド</span>
+        <button onclick="removeTextCandidate('「電音」カーニバル');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">➕ 弧盤候補を追加</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="new-text-name" placeholder="テキスト名を入力" style="flex:1;min-width:160px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;">
+        <select id="new-text-attr" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;cursor:pointer;">
+          <option value="気体">気体</option>
+          <option value="重合体">重合体</option>
+          <option value="ソリッド">ソリッド</option>
+          <option value="プラズマ">プラズマ</option>
+          <option value="リキッド">リキッド</option>
+        </select>
+        <button class="btn btn-primary" style="font-size:13px;padding:8px 18px;" onclick="addTextCandidate()">追加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- コントロール -->
+<div class="card">
+  <h3>抽出設定</h3>
+
+  <div class="controls-row">
+    <label class="toggle-label">
+      <input type="checkbox" id="exclude-mode" onchange="handleModeChange()">
+      一度抽出した項目を次の1回だけ除外する
+    </label>
+  </div>
+
+  <div class="controls-row">
+    <span style="font-size:13px;color:var(--text-muted);margin-right:4px;">モード：</span>
+    <div class="radio-group">
+      <label><input type="radio" name="mode" value="normal" checked="" onchange="handleModeUI()"> 通常抽出</label>
+      <label><input type="radio" name="mode" value="zenkou" onchange="handleModeUI()"> 前半＋後半同時抽出</label>
+      <label><input type="radio" name="mode" value="yonin" onchange="handleModeUI()"> 4人編成</label>
+      <label><input type="radio" name="mode" value="tanki" onchange="handleModeUI()"> 🗡️ 単騎抽出</label>
+    </div>
+  </div>
+
+  <div class="controls-row">
+    <span style="font-size:13px;color:var(--text-muted);margin-right:4px;">キャラクター設定：</span>
+    <div class="radio-group">
+      <label><input type="radio" name="filter" value="all" checked=""> 全画像</label>
+      <label><input type="radio" name="filter" value="star4"> A ランクのみ</label>
+      <label><input type="radio" name="filter" value="star5"> S ランクのみ</label>
+    </div>
+  </div>
+
+  <!-- 4人編成オプション（4人編成モード時のみ表示） -->
+  <div id="yonin-options" style="display:none;margin-top:10px;padding:10px 14px;background:var(--surface2);border-radius:8px;font-size:13px;">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+      <input type="checkbox" id="yonin-zenkou" style="accent-color:var(--accent);width:16px;height:16px;">
+      <span>前半後半に対応する（前半4人・後半4人　計8人抽出）</span>
+    </label>
+  </div>
+
+  <!-- 通常・前半後半モード用ボタン -->
+  <div class="controls-row" id="normal-controls" style="margin-top:16px;">
+    <button class="btn btn-primary" onclick="randomExtract()">🎲 抽出実行</button>
+    <button class="btn btn-ghost" onclick="resetAll()">リセット</button>
+  </div>
+
+  <!-- 単騎モード用ボタン -->
+  <div class="controls-row" id="tanki-controls" style="margin-top:16px;display:none;">
+    <button class="btn btn-primary" onclick="extractTanki()">🎲 抽出実行</button>
+    <button class="btn btn-ghost" onclick="resetAll()">リセット</button>
+  </div>
+
+  <!-- エクスポート -->
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">配布用HTML：現在の画像・弧盤候補を埋め込んで、誰でもそのまま使えるファイルを生成します。<span style="color:#c0a060;font-weight:700;margin-left:6px;">※管理者専用</span></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
+      <button class="btn btn-ghost" style="border-color:var(--accent);color:var(--accent);font-weight:700;" onclick="exportEmbeddedHTML()">📤 配布用HTMLを書き出す</button>
+    </div>
+  </div>
+</div>
+
+<!-- 結果 -->
+<div id="result"></div>
+
+<!-- 単騎結果（モード時はここに表示） -->
+<div id="tanki-result-main" style="margin-top:24px;"></div>
+
+<!-- フッター -->
+<p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:48px;padding-top:16px;border-top:1px solid var(--border);">製作者：JACK　／　製作補助：Claude (Anthropic)</p>
+
+<script>
+const TEXT_CANDIDATES = [
+  {
+    "name": "お散歩ワンワン",
+    "attr": "気体"
+  },
+  {
+    "name": "椿会",
+    "attr": "重合体"
+  },
+  {
+    "name": "休息日",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "プリペア",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "熱狂の渦",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "漆黒の青春妄想",
+    "attr": "リキッド"
+  },
+  {
+    "name": "思考ニャン",
+    "attr": "気体"
+  },
+  {
+    "name": "炎魂ハリケーン",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "永遠のワルツ",
+    "attr": "重合体"
+  },
+  {
+    "name": "ヘテロシティの平穏",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "現実の避難所",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "仮面の下の涙",
+    "attr": "気体"
+  },
+  {
+    "name": "鯨の歌",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "時間外を行く",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "「ラスト・ローズ」",
+    "attr": "リキッド"
+  },
+  {
+    "name": "「傾世の雨」",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "「銀河の残像」",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "忘れな傘",
+    "attr": "重合体"
+  },
+  {
+    "name": "光のカーニバル",
+    "attr": "気体"
+  },
+  {
+    "name": "輝かしい日々",
+    "attr": "リキッド"
+  },
+  {
+    "name": "忘れられし者",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "オラオラ!",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "ひらめきデスゲーム",
+    "attr": "リキッド"
+  },
+  {
+    "name": "呪われた出会い",
+    "attr": "重合体"
+  },
+  {
+    "name": "頭上に注意!",
+    "attr": "気体"
+  },
+  {
+    "name": "空域確保開始",
+    "attr": "リキッド"
+  },
+  {
+    "name": "言葉にできない",
+    "attr": "気体"
+  },
+  {
+    "name": "抜刀",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "いつかは終わる",
+    "attr": "重合体"
+  },
+  {
+    "name": "愚者が春を蒔く",
+    "attr": "重合体"
+  },
+  {
+    "name": "歪んだ城の呼び声",
+    "attr": "リキッド"
+  },
+  {
+    "name": "危険なゲーム",
+    "attr": "重合体"
+  },
+  {
+    "name": "成功への第一歩",
+    "attr": "ソリッド"
+  },
+  {
+    "name": "いつも笑顔で",
+    "attr": "気体"
+  },
+  {
+    "name": "「私たち」",
+    "attr": "プラズマ"
+  },
+  {
+    "name": "「電音」カーニバル",
+    "attr": "リキッド"
+  }
+];
+
+const ATTRS = ["気体", "重合体", "ソリッド", "プラズマ", "リキッド"];
+const TEXT_CANDIDATES_ORIGINAL = TEXT_CANDIDATES.map(t => t.name);
+
+function attrColor(a) {
+  return { "気体":"var(--gas)", "重合体":"var(--polymer)", "ソリッド":"var(--solid)", "プラズマ":"var(--plasma)", "リキッド":"var(--liquid)" }[a] || "#888";
+}
+function attrTextColor(a) {
+  return '#fff';
+}
+
+let allImages = [];
+let tempExcludedTexts = new Set();
+let tempExcludedImages = new Set();
+let currentTextFilter = "全て";
+let tankiLastPick = null;
+
+// ─── 弧盤オン/オフ ───
+function isKobanEnabled() {
+  return document.getElementById('koban-toggle').checked;
+}
+
+function handleKobanToggle() {
+  const enabled = isKobanEnabled();
+  document.getElementById('koban-content').classList.toggle('disabled', !enabled);
+  const status = document.getElementById('koban-status');
+  status.textContent = enabled ? 'ON' : 'OFF';
+  status.className = 'toggle-status ' + (enabled ? 'on' : 'off');
+}
+
+// ランク文字列 → 数値変換（4/5 も A/S も対応）
+function parseRankStr(s) {
+  if (!s) return null;
+  const u = s.toUpperCase();
+  if (u === 'S' || s === '5') return 5;
+  if (u === 'A' || s === '4') return 4;
+  return null;
+}
+
+// ─── ファイル名解析（新形式: 名前_タイプ_ランク　旧形式も維持）───
+function parseFilename(filename) {
+  // 拡張子除去
+  const base = filename.replace(/\.[^/.]+$/, "");
+
+  // 新形式: 〇〇_△△_□□ （アンダースコア区切り3パーツ）
+  // 例: ちぃちゃん_気体_5　ちぃちゃん_ソリッド_4
+  const parts = base.split('_');
+  if (parts.length >= 3) {
+    const namePart = parts.slice(0, parts.length - 2).join('_');
+    const attrPart = parts[parts.length - 2];
+    const rankPart = parts[parts.length - 1];
+    const validAttr = ATTRS.includes(attrPart) ? attrPart : null;
+    const validRank = parseRankStr(rankPart);
+    if (validAttr) {
+      return { name: namePart.trim() || "無名画像", attr: validAttr, rank: validRank };
+    }
+  }
+  // 新形式: 〇〇_△△ （ランクなし2パーツ）
+  if (parts.length >= 2) {
+    const namePart = parts.slice(0, parts.length - 1).join('_');
+    const attrPart = parts[parts.length - 1];
+    const validAttr = ATTRS.includes(attrPart) ? attrPart : null;
+    if (validAttr) {
+      return { name: namePart.trim() || "無名画像", attr: validAttr, rank: null };
+    }
+  }
+
+  // 旧形式フォールバック（タイプ名がどこかに含まれる・（星N）形式）
+  let name = base;
+  let attr = null;
+  let rank = null;
+  for (const a of ATTRS) {
+    if (name.includes(a)) { attr = a; name = name.replace(a, ''); break; }
+  }
+  const m = name.match(/[（(]星(\d)[）)]/);
+  if (m) { rank = parseInt(m[1]); name = name.replace(m[0], ''); }
+  // _A _S 形式
+  const ms = name.match(/[_\-]([AaSs])$/);
+  if (ms && !rank) { rank = parseRankStr(ms[1]); name = name.replace(ms[0], ''); }
+  name = name.replace(/^[_\-\s]+|[_\-\s]+$/g, '').trim() || "無名画像";
+  return { name, attr, rank };
+}
+
+function detectAttr(filename) { return parseFilename(filename).attr; }
+function detectRank(filename)  { return parseFilename(filename).rank; }
+function cleanName(filename)   { return parseFilename(filename).name; }
+
+// ─── ドロップゾーン ───
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--border)'; });
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--border)'; handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => { handleFiles(e.target.files); fileInput.value = ''; });
+
+// モバイルでは label の for="file-input" がそのまま動くが、
+// div 全体をタップしても開くよう click を補完（ただし label 内タップとの二重発火を防ぐ）
+dropZone.addEventListener('click', e => {
+  if (e.target.tagName === 'LABEL' || e.target.closest('label')) return;
+  fileInput.click();
+});
+// タッチフィードバック
+dropZone.addEventListener('touchstart', () => { dropZone.style.borderColor = 'var(--accent)'; }, { passive: true });
+dropZone.addEventListener('touchend',   () => { dropZone.style.borderColor = 'var(--border)'; }, { passive: true });
+
+// ─── モーダル登録フロー ───
+let registerQueue = [];  // { src, defaultName, defaultAttr, defaultRank }
+let registerIndex = 0;
+
+function handleFiles(files) {
+  const fileArr = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (fileArr.length === 0) return;
+
+  let loaded = 0;
+  const pending = [];
+
+  fileArr.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pending.push({
+        src: ev.target.result,
+        defaultName: cleanName(file.name),
+        defaultAttr: detectAttr(file.name) || '',
+        defaultRank: detectRank(file.name) || ''
+      });
+      loaded++;
+      if (loaded === fileArr.length) {
+        // 読み込み完了 → モーダルキューに追加して開始
+        registerQueue = pending;
+        registerIndex = 0;
+        openRegisterModal();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function openRegisterModal() {
+  if (registerIndex >= registerQueue.length) {
+    // 全件完了
+    document.getElementById('register-overlay').classList.remove('active');
+    saveImagesToStorage();
+    renderUploaded();
+    return;
+  }
+
+  const item = registerQueue[registerIndex];
+  document.getElementById('modal-preview').src = item.src;
+  document.getElementById('modal-name').value = item.defaultName;
+  document.getElementById('modal-attr').value = item.defaultAttr;
+  document.getElementById('modal-rank').value = String(item.defaultRank);
+  document.getElementById('modal-counter').textContent =
+    registerQueue.length > 1 ? `${registerIndex + 1} / ${registerQueue.length}` : '';
+
+  document.getElementById('register-overlay').classList.add('active');
+  // キャラ名フィールドにフォーカス
+  setTimeout(() => document.getElementById('modal-name').focus(), 100);
+}
+
+function confirmRegister() {
+  const name = document.getElementById('modal-name').value.trim();
+  const attr = document.getElementById('modal-attr').value;
+
+  if (!name) {
+    document.getElementById('modal-name').focus();
+    document.getElementById('modal-name').style.borderColor = '#c44';
+    return;
+  }
+  if (!attr) {
+    document.getElementById('modal-attr').style.borderColor = '#c44';
+    return;
+  }
+  document.getElementById('modal-name').style.borderColor = '';
+  document.getElementById('modal-attr').style.borderColor = '';
+
+  const rank = document.getElementById('modal-rank').value
+    ? parseInt(document.getElementById('modal-rank').value) : null;
+  const src = registerQueue[registerIndex].src;
+
+  const existing = allImages.findIndex(img => img.name === name);
+  if (existing !== -1) {
+    allImages[existing] = { src, name, attr, rank };
+  } else {
+    allImages.push({ src, name, attr, rank });
+  }
+
+  registerIndex++;
+  openRegisterModal();
+}
+
+function skipRegister() {
+  // 残りすべてキャンセルしてモーダルを閉じる
+  registerQueue = [];
+  registerIndex = 0;
+  document.getElementById('register-overlay').classList.remove('active');
+  // それまでに登録済みのものがあれば保存
+  saveImagesToStorage();
+  renderUploaded();
+}
+
+// Enterキーで登録
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('register-overlay').classList.contains('active')) {
+    confirmRegister();
+  }
+});
+
+function saveImagesToStorage() {
+  try {
+    // Base64画像はサイズが大きいため分割保存
+    localStorage.setItem('nte_images_meta', JSON.stringify(
+      allImages.map(img => ({ name: img.name, attr: img.attr, rank: img.rank ?? null }))
+    ));
+    allImages.forEach((img, i) => {
+      localStorage.setItem('nte_img_' + i, img.src);
+    });
+    // 古いインデックスを削除
+    let i = allImages.length;
+    while (localStorage.getItem('nte_img_' + i) !== null) {
+      localStorage.removeItem('nte_img_' + i);
+      i++;
+    }
+  } catch(e) {
+    console.warn('画像の保存に失敗しました（容量超過の可能性）:', e);
+  }
+}
+
+function loadImagesFromStorage() {
+  try {
+    const meta = localStorage.getItem('nte_images_meta');
+    if (!meta) return;
+    const metas = JSON.parse(meta);
+    allImages = [];
+    metas.forEach((m, i) => {
+      const src = localStorage.getItem('nte_img_' + i);
+      if (src) {
+        // 旧データ互換：nameにタイプやランクが残っていれば再クリーン
+        const cleanedName = cleanName(m.name + '.dummy');
+        const rank = m.rank ?? detectRank(m.name);
+        allImages.push({ name: cleanedName, attr: m.attr, rank, src });
+      }
+    });
+  } catch(e) {
+    console.warn('画像の読み込みに失敗しました:', e);
+  }
+}
+
+// 無効化（オフ）状態の画像セット
+const disabledImages = new Set();
+
+function toggleImageEnabled(name, checkbox) {
+  if (checkbox.checked) {
+    disabledImages.delete(name);
+  } else {
+    disabledImages.add(name);
+  }
+  renderUploaded();
+}
+
+function deleteImage(name) {
+  allImages = allImages.filter(img => img.name !== name);
+  tempExcludedImages.delete(name);
+  disabledImages.delete(name);
+  saveImagesToStorage();
+  renderUploaded();
+}
+
+function renderUploaded() {
+  const container = document.getElementById('uploaded');
+  if (allImages.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">まだ画像がありません</p>';
+    return;
+  }
+  container.innerHTML = `<p style="color:var(--text-muted);font-size:12px;width:100%;text-align:center;margin-bottom:8px;">計 ${allImages.length}枚</p>`;
+  allImages.forEach(item => {
+    const div = document.createElement('div');
+    div.className = `thumb${tempExcludedImages.has(item.name) ? ' temporary-excluded' : ''}`;
+    const col = item.attr ? attrColor(item.attr) : 'var(--border)';
+    const tc  = item.attr ? attrTextColor(item.attr) : '#fff';
+
+    const isDisabled = disabledImages.has(item.name);
+    if (isDisabled) div.classList.add('img-disabled');
+    const safeId = 'toggle_' + CSS.escape(item.name);
+    div.innerHTML = `
+      <img src="${item.src}">
+      ${item.attr ? `<span class="attr-badge" style="background:${col};color:${tc};">${item.attr}</span>` : ''}
+      ${item.rank ? `<span class="rank-badge rank-${item.rank}">${item.rank === 5 ? "S" : item.rank === 4 ? "A" : item.rank}</span>` : ''}
+      <div class="name">${item.name}</div>
+      <div class="thumb-controls">
+        <span class="thumb-toggle-label">${isDisabled ? 'OFF' : 'ON'}</span>
+        <label class="thumb-toggle-switch">
+          <input type="checkbox" id="${safeId}" ${isDisabled ? '' : 'checked'} onchange="toggleImageEnabled('${item.name.replace(/'/g,"\\'")}', this)">
+          <span class="thumb-toggle-slider"></span>
+        </label>
+      <button class="btn" style="margin-top:6px;width:100%;font-size:12px;" onclick="deleteImageByName('${item.name.replace(/'/g,"\\'")}')">🗑 削除</button></div>`;
+    container.appendChild(div);
+  });
+}
+
+function renderTextList() {
+  const container = document.getElementById('textList');
+  container.innerHTML = '';
+  TEXT_CANDIDATES
+    .filter(t => currentTextFilter === "全て" || t.attr === currentTextFilter)
+    .forEach(t => {
+      const label = document.createElement('label');
+      const excluded = tempExcludedTexts.has(t.name);
+      label.style.opacity = excluded ? '0.45' : '1';
+      label.innerHTML = `
+        <input type="checkbox" class="textCandidate" value="${t.name}" data-attr="${t.attr}" ${excluded ? '' : 'checked'} onchange="updateCheckCount()">
+        <span>${t.name}</span>
+        <span class="tag tag-${t.attr}">${t.attr}</span>
+        <button onclick="removeTextCandidate('${t.name.replace(/'/g,"\\'")}');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button>`;
+      container.appendChild(label);
+    });
+  updateCheckCount();
+}
+
+function filterTextList(attr) {
+  currentTextFilter = attr;
+  document.querySelectorAll('.attr-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.attr === attr);
+  });
+  renderTextList();
+}
+
+function updateCheckCount() {
+  const all = document.querySelectorAll('.textCandidate');
+  const checked = document.querySelectorAll('.textCandidate:checked');
+  const el = document.getElementById('check-count');
+  if (el) el.textContent = `${checked.length} / ${all.length} 件選択中`;
+}
+
+function selectAllVisible() {
+  document.querySelectorAll('.textCandidate').forEach(cb => cb.checked = true);
+  updateCheckCount();
+}
+function deselectAllVisible() {
+  document.querySelectorAll('.textCandidate').forEach(cb => cb.checked = false);
+  updateCheckCount();
+}
+function removeTextCandidate(name) {
+  const idx = TEXT_CANDIDATES.findIndex(t => t.name === name);
+  if (idx !== -1) TEXT_CANDIDATES.splice(idx, 1);
+  renderTextList();
+}
+function addTextCandidate() {
+  const nameEl = document.getElementById('new-text-name');
+  const attrEl = document.getElementById('new-text-attr');
+  const name = nameEl.value.trim();
+  const attr = attrEl.value;
+  if (!name) { nameEl.focus(); return; }
+  if (TEXT_CANDIDATES.some(t => t.name === name)) {
+    alert('同じ名前の候補がすでに存在します。');
+    return;
+  }
+  TEXT_CANDIDATES.push({ name, attr });
+  nameEl.value = '';
+  renderTextList();
+  updateCheckCount();
+}
+
+function getCategory(name) {
+  if (name.includes("星5")) return "star5";
+  if (name.includes("星4")) return "star4";
+  return "normal";
+}
+
+// ─── モード切り替え ───
+function handleModeUI() {
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const isTanki = mode === 'tanki';
+  const isYonin = mode === 'yonin';
+
+  document.getElementById('tanki-controls').style.display = isTanki ? 'flex' : 'none';
+  document.getElementById('normal-controls').style.display = isTanki ? 'none' : 'flex';
+  document.getElementById('koban-section').style.display = 'block';
+  document.getElementById('yonin-options').style.display = isYonin ? 'block' : 'none';
+
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('tanki-result-main').innerHTML = '';
+}
+
+function handleModeChange() {
+  if (!document.getElementById('exclude-mode').checked) {
+    tempExcludedTexts.clear();
+    tempExcludedImages.clear();
+    renderUploaded();
+    renderTextList();
+  }
+}
+
+// ─── 有効候補を計算するヘルパー ───
+function calcGroups(excludeTexts, excludeImages, filterType) {
+  // 弧盤オフ時はチェック済みテキストを空配列にする
+  const kobanOn = isKobanEnabled();
+  const checkedTexts = kobanOn
+    ? [...document.querySelectorAll('.textCandidate:checked')].map(el => ({ name: el.value, attr: el.dataset.attr }))
+    : [];
+
+  let availableImages = allImages.filter(img => !excludeImages.has(img.name) && !disabledImages.has(img.name));
+  if (filterType !== "all") {
+    availableImages = availableImages.filter(img => getCategory(img.name) === filterType);
+  }
+
+  const attrImages = availableImages.filter(img => img.attr && ATTRS.includes(img.attr));
+
+  const groups = {};
+  ATTRS.forEach(a => groups[a] = { texts: [], images: [] });
+  checkedTexts.forEach(t => { if (groups[t.attr]) groups[t.attr].texts.push(t); });
+  attrImages.forEach(img => { groups[img.attr].images.push(img); });
+
+  return { checkedTexts, availableImages: attrImages, groups };
+}
+
+// ─── 抽出 ───
+function randomExtract() {
+  const isExcludeMode = document.getElementById('exclude-mode').checked;
+  const extractMode   = document.querySelector('input[name="mode"]:checked').value;
+  const filterType    = document.querySelector('input[name="filter"]:checked').value;
+  const kobanOn       = isKobanEnabled();
+
+  let { checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType);
+
+  // 弧盤オフ時は画像のみ抽出モード
+  if (!kobanOn) {
+    if (availableImages.length === 0) {
+      if (isExcludeMode && tempExcludedImages.size > 0) {
+        tempExcludedImages.clear();
+        ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType));
+        renderUploaded();
+      }
+      if (availableImages.length === 0) return alert('画像をアップロードしてください。');
+    }
+
+    const shuffled = [...availableImages].sort(() => Math.random() - 0.5);
+    let pickedImages = [];
+
+    if (extractMode === 'zenkou') {
+      // 前半後半モード：画像を2分割してそれぞれ1〜4枚抽出
+      const half = Math.ceil(shuffled.length / 2);
+      const zenhanPool = shuffled.slice(0, half);
+      const kouhanPool = shuffled.slice(half);
+
+      const pickN = (pool) => {
+        const n = Math.min(Math.floor(Math.random() * 4) + 1, pool.length);
+        return pool.slice(0, n).map(img => ({ ...img, half: null })); // halfはshowResultImagesOnlyで付与
+      };
+
+      const zenPicked = zenhanPool.length > 0 ? pickN(zenhanPool).map(img => ({ ...img, half: '前半' })) : [];
+      const kouPicked = kouhanPool.length > 0 ? pickN(kouhanPool).map(img => ({ ...img, half: '後半' })) : [];
+      pickedImages = [...zenPicked, ...kouPicked];
+    } else if (extractMode === 'yonin') {
+      // 4人編成モード
+      // 前半後半チェックボックスがONかどうかで分岐
+      const isZenkou = document.getElementById('yonin-zenkou') && document.getElementById('yonin-zenkou').checked;
+      if (isZenkou) {
+        // 前半4人・後半4人 計8人
+        if (shuffled.length < 8) return alert('4人編成（前半後半）には8枚以上の画像が必要です。');
+        const zenPicked = shuffled.slice(0, 4).map(img => ({ ...img, half: '前半' }));
+        const kouPicked = shuffled.slice(4, 8).map(img => ({ ...img, half: '後半' }));
+        pickedImages = [...zenPicked, ...kouPicked];
+      } else {
+        // 通常：4人固定
+        if (shuffled.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+        pickedImages = shuffled.slice(0, 4).map(img => ({ ...img, half: null }));
+      }
+    } else {
+      // 通常モード：1〜4枚抽出
+      const count = Math.min(Math.floor(Math.random() * 4) + 1, shuffled.length);
+      pickedImages = shuffled.slice(0, count).map(img => ({ ...img, half: null }));
+    }
+
+    if (isExcludeMode) {
+      tempExcludedImages.clear();
+      pickedImages.forEach(img => tempExcludedImages.add(img.name));
+      renderUploaded();
+    }
+
+    showResultImagesOnly(pickedImages);
+    return;
+  }
+
+  // 弧盤オン（従来ロジック）
+  // 画像が1枚もない場合はここで止める
+  if (allImages.length === 0) {
+    return alert('画像をアップロードしてください。');
+  }
+
+  let eligibleAttrs = ATTRS.filter(a => groups[a].texts.length > 0 && groups[a].images.length > 0);
+
+  if (isExcludeMode && eligibleAttrs.length === 0) {
+    tempExcludedTexts.clear();
+    tempExcludedImages.clear();
+    ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType));
+    eligibleAttrs = ATTRS.filter(a => groups[a].texts.length > 0 && groups[a].images.length > 0);
+    renderUploaded();
+    renderTextList();
+  }
+
+  const textOnlyAttrs  = ATTRS.filter(a => groups[a].texts.length > 0 && groups[a].images.length === 0);
+  const imageOnlyAttrs = ATTRS.filter(a => groups[a].images.length > 0 && groups[a].texts.length === 0);
+
+  if (checkedTexts.length === 0 && availableImages.length === 0) {
+    return alert('候補がありません。');
+  }
+  if (availableImages.length === 0) {
+    return alert('抽出できる画像がありません。フィルタ設定を確認してください。');
+  }
+  if (eligibleAttrs.length === 0 && textOnlyAttrs.length === 0 && imageOnlyAttrs.length === 0) {
+    return alert('抽出できる候補がありません。');
+  }
+
+  let pickedPairs = [];
+  let pickedTextOnly = [];
+  let pickedImageOnly = [];
+  const usedTexts = new Set();
+
+  if (extractMode === "zenkou") {
+    const shuffledImages = [...availableImages].sort(() => Math.random() - 0.5);
+    const shuffledTexts  = [...checkedTexts].sort(() => Math.random() - 0.5);
+    const imgHalf  = Math.ceil(shuffledImages.length / 2);
+    const textHalf = Math.ceil(shuffledTexts.length / 2);
+    const zenhanImages = shuffledImages.slice(0, imgHalf);
+    const kouhanImages = shuffledImages.slice(imgHalf);
+    const zenhanTexts  = shuffledTexts.slice(0, textHalf);
+    const kouhanTexts  = shuffledTexts.slice(textHalf);
+
+    const pairUp = (imgs, txts, halfLabel) => {
+      const imgByAttr = {}, txtByAttr = {};
+      ATTRS.forEach(a => { imgByAttr[a] = []; txtByAttr[a] = []; });
+      imgs.forEach(img => { if (img.attr && imgByAttr[img.attr]) imgByAttr[img.attr].push(img); });
+      txts.forEach(t  => { if (t.attr && txtByAttr[t.attr] && !usedTexts.has(t.name)) txtByAttr[t.attr].push(t); });
+      const halfEligible = ATTRS.filter(a => imgByAttr[a].length > 0 && txtByAttr[a].length > 0);
+      const halfMax = Math.min(Math.floor(Math.random() * 4) + 1, halfEligible.length);
+      let halfCount = 0;
+      ATTRS.forEach(attr => {
+        if (halfCount >= halfMax) return;
+        const iList = imgByAttr[attr];
+        const tList = txtByAttr[attr];
+        if (!iList.length) return;
+        const pairCount = Math.min(iList.length, tList.length, halfMax - halfCount);
+        for (let i = 0; i < pairCount; i++) {
+          if (!tList[i] || !iList[i]) continue;
+          usedTexts.add(tList[i].name);
+          pickedPairs.push({ attr, text: tList[i], image: iList[i], half: halfLabel });
+          halfCount++;
+        }
+      });
+    };
+    pairUp(zenhanImages, zenhanTexts, '前半');
+    pairUp(kouhanImages, kouhanTexts, '後半');
+  } else if (extractMode === "yonin") {
+    // 4人編成モード
+    const shuffledImages = [...availableImages].sort(() => Math.random() - 0.5);
+    const shuffledTexts  = [...checkedTexts].sort(() => Math.random() - 0.5);
+    const isZenkou = document.getElementById('yonin-zenkou') && document.getElementById('yonin-zenkou').checked;
+
+    const pairFixed = (imgs, txts, halfLabel) => {
+      imgs.forEach((img, i) => {
+        const t = txts[i] || null;
+        if (t) usedTexts.add(t.name);
+        pickedPairs.push({ attr: img.attr || '', text: t, image: img, half: halfLabel });
+      });
+    };
+
+    if (isZenkou) {
+      // 前半4人・後半4人 計8人
+      if (shuffledImages.length < 8) return alert('4人編成（前半後半）には8枚以上の画像が必要です。');
+      pairFixed(shuffledImages.slice(0, 4), shuffledTexts.slice(0, 4), '前半');
+      pairFixed(shuffledImages.slice(4, 8), shuffledTexts.slice(4, 8), '後半');
+    } else {
+      // 通常：4人固定
+      if (shuffledImages.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+      pairFixed(shuffledImages.slice(0, 4), shuffledTexts.slice(0, 4), null);
+    }
+  } else {
+    const maxCount = eligibleAttrs.length;
+    const count = Math.min(Math.floor(Math.random() * 4) + 1, maxCount);
+    const shuffled = [...eligibleAttrs].sort(() => Math.random() - 0.5).slice(0, count);
+    shuffled.forEach(attr => {
+      const g = groups[attr];
+      if (!g.images.length) return;
+      const availTexts = g.texts.filter(t => !usedTexts.has(t.name));
+      if (!availTexts.length) return;
+      const t = availTexts[Math.floor(Math.random() * availTexts.length)];
+      const img = g.images[Math.floor(Math.random() * g.images.length)];
+      if (!t || !img) return;
+      usedTexts.add(t.name);
+      pickedPairs.push({ attr, text: t, image: img, half: null });
+    });
+    if (textOnlyAttrs.length > 0 && Math.random() > 0.5) {
+      const attr = textOnlyAttrs[Math.floor(Math.random() * textOnlyAttrs.length)];
+      const availTexts = groups[attr].texts.filter(t => !usedTexts.has(t.name));
+      if (availTexts.length) {
+        const t = availTexts[Math.floor(Math.random() * availTexts.length)];
+        usedTexts.add(t.name);
+        pickedTextOnly.push(t);
+      }
+    }
+    if (imageOnlyAttrs.length > 0 && Math.random() > 0.5) {
+      const attr = imageOnlyAttrs[Math.floor(Math.random() * imageOnlyAttrs.length)];
+      const img = groups[attr].images[Math.floor(Math.random() * groups[attr].images.length)];
+      pickedImageOnly.push(img);
+    }
+  }
+
+  if (isExcludeMode) {
+    tempExcludedImages.clear();
+    pickedPairs.forEach(p => { if (p.image) tempExcludedImages.add(p.image.name); });
+    pickedImageOnly.forEach(img => tempExcludedImages.add(img.name));
+  }
+
+  renderUploaded();
+  renderTextList();
+  showResult(pickedPairs, pickedTextOnly, pickedImageOnly, extractMode);
+}
+
+// 弧盤オフ時の画像のみ結果表示
+function showResultImagesOnly(images) {
+  const resultEl = document.getElementById('result');
+
+  const zenPicked  = images.filter(img => img.half === '前半');
+  const kouPicked  = images.filter(img => img.half === '後半');
+  const normPicked = images.filter(img => img.half === null);
+
+  // サマリー
+  let summaryHtml = '';
+  if (normPicked.length > 0) {
+    const names = normPicked.map(img => `<span style="font-weight:700;color:#111;">${img.name}</span>`).join('、');
+    summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+      抽出人数：<strong>${normPicked.length}人</strong>　${names}
+    </div>`;
+  }
+  if (zenPicked.length > 0 || kouPicked.length > 0) {
+    const zenNames = zenPicked.map(img => `<span style="font-weight:700;color:#111;">${img.name}</span>`).join('、');
+    const kouNames = kouPicked.map(img => `<span style="font-weight:700;color:#111;">${img.name}</span>`).join('、');
+    summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+      ${zenPicked.length > 0 ? `<div>【前半】<strong>${zenPicked.length}人</strong>　${zenNames}</div>` : ''}
+      ${kouPicked.length > 0 ? `<div>【後半】<strong>${kouPicked.length}人</strong>　${kouNames}</div>` : ''}
+      <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">合計 <strong>${images.length}人</strong></div>
+    </div>`;
+  }
+
+  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">（弧盤なし・画像のみ）</span></h2>${summaryHtml}`;
+
+  const renderImageCards = (list) => `<div class="pair-grid">` + list.map(img => {
+    const col = img.attr ? attrColor(img.attr) : 'var(--border)';
+    const tc  = img.attr ? attrTextColor(img.attr) : '#fff';
+    return `<div class="pair-card">
+        ${img.attr ? `<div class="pair-attr" style="background:${col};color:${tc};"><span>${img.attr}</span></div>` : ''}
+        <img src="${img.src}" alt="${img.name}">
+        <div class="pair-body"><div class="pair-img-name">🖼 ${img.name}</div></div>
+      </div>`;
+  }).join('') + `</div>`;
+
+  if (normPicked.length > 0) html += renderImageCards(normPicked);
+  if (zenPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p>` + renderImageCards(zenPicked);
+  if (kouPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p>` + renderImageCards(kouPicked);
+
+  resultEl.innerHTML = html;
+}
+
+function showResult(pairs, textOnly, imageOnly, mode) {
+  const resultEl = document.getElementById('result');
+
+  const zenpairs  = pairs.filter(p => p.half === '前半');
+  const kopairs   = pairs.filter(p => p.half === '後半');
+  const normPairs = pairs.filter(p => p.half === null);
+  const total = pairs.length + textOnly.length + imageOnly.length;
+
+  // サマリーボックス
+  let summaryHtml = '';
+  if (total > 0) {
+    if (normPairs.length > 0 || textOnly.length > 0 || imageOnly.length > 0) {
+      const allNames = [
+        ...normPairs.map(p => p.image ? p.image.name : (p.text ? p.text.name : '')),
+        ...textOnly.map(t => t.name),
+        ...imageOnly.map(img => img.name)
+      ].filter(Boolean).map(n => `<span style="font-weight:700;color:#111;">${n}</span>`).join('、');
+      summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+        抽出人数：<strong>${total}人</strong>　${allNames}
+      </div>`;
+    }
+    if (zenpairs.length > 0 || kopairs.length > 0) {
+      const zenNames = zenpairs.map(p => `<span style="font-weight:700;color:#111;">${p.image ? p.image.name : p.text?.name ?? ''}</span>`).join('、');
+      const kouNames = kopairs.map(p => `<span style="font-weight:700;color:#111;">${p.image ? p.image.name : p.text?.name ?? ''}</span>`).join('、');
+      summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+        ${zenpairs.length > 0 ? `<div>【前半】<strong>${zenpairs.length}人</strong>　${zenNames}</div>` : ''}
+        ${kopairs.length > 0  ? `<div>【後半】<strong>${kopairs.length}人</strong>　${kouNames}</div>` : ''}
+        <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">合計 <strong>${zenpairs.length + kopairs.length}人</strong></div>
+      </div>`;
+    }
+  }
+
+  const modeLabel = mode === 'yonin' ? '（4人編成）' : '';
+  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">${modeLabel}</span></h2>${summaryHtml}`;
+
+  if (pairs.length > 0) {
+    const renderPairCards = (list) => list.map(p => {
+      const col = attrColor(p.attr);
+      const tc  = attrTextColor(p.attr);
+      return `
+        <div class="pair-card">
+          <div class="pair-attr" style="background:${col};color:${tc};"><span>${p.attr}</span></div>
+          ${p.image && p.image.src ? `<img src="${p.image.src}" alt="${p.image.name}">` : `<div class="no-image">画像なし</div>`}
+          <div class="pair-body">
+            ${p.image && p.image.src ? `<div class="pair-img-name">🖼 ${p.image.name}</div>` : ''}
+            ${p.text  ? `<div class="pair-text-name">📝 ${p.text.name}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    if (normPairs.length > 0) html += `<div class="pair-grid">${renderPairCards(normPairs)}</div>`;
+    if (zenpairs.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p><div class="pair-grid">${renderPairCards(zenpairs)}</div>`;
+    if (kopairs.length > 0)   html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p><div class="pair-grid">${renderPairCards(kopairs)}</div>`;
+  }
+
+  if (textOnly.length > 0) {
+    html += `<div class="solo-section"><h4>📝 テキストのみ（対応画像なし）</h4><div class="solo-list">` +
+      textOnly.map(t => `<div class="solo-item">${t.name}<span class="tag tag-${t.attr}">${t.attr}</span></div>`).join('') +
+      `</div></div>`;
+  }
+  if (imageOnly.length > 0) {
+    html += `<div class="solo-section"><h4>🖼 画像のみ（対応テキストなし）</h4><div class="solo-list">` +
+      imageOnly.map(img => `<div class="solo-item">${img.name}<span class="tag tag-${img.attr}">${img.attr}</span></div>`).join('') +
+      `</div></div>`;
+  }
+  if (pairs.length === 0 && textOnly.length === 0 && imageOnly.length === 0) {
+    html += `<p style="color:var(--text-muted);">条件に合う組み合わせがありませんでした。</p>`;
+  }
+
+  resultEl.innerHTML = html;
+}
+
+// ─── 単騎抽出 ───
+function extractTanki() {
+  const filterType = document.querySelector('input[name="filter"]:checked').value;
+  const isExcludeMode = document.getElementById('exclude-mode').checked;
+
+  let pool = allImages.filter(img => !disabledImages.has(img.name));
+  if (filterType !== 'all') {
+    pool = pool.filter(img => getCategory(img.name) === filterType);
+  }
+  if (pool.length === 0) {
+    return alert('有効な画像がありません（オフにした画像が多すぎる可能性があります）。');
+  }
+
+  // 除外モードONの場合のみ除外を適用
+  let candidates;
+  if (isExcludeMode) {
+    candidates = pool.filter(img => {
+      if (img.name === tankiLastPick) return false;
+      if (tempExcludedImages.has(img.name)) return false;
+      return true;
+    });
+    // 候補が0になったらリセットして再試行
+    if (candidates.length === 0) {
+      tempExcludedImages.clear();
+      candidates = pool.filter(img => img.name !== tankiLastPick);
+    }
+    // それでも0なら全体から
+    if (candidates.length === 0) candidates = pool;
+  } else {
+    // 除外モードOFF：被りあり・完全ランダム
+    candidates = pool;
+  }
+
+  const winner = candidates[Math.floor(Math.random() * candidates.length)];
+  tankiLastPick = winner.name;
+
+  // 除外モードONなら今回のキャラをtempExcludedImagesに追加
+  if (isExcludeMode) {
+    tempExcludedImages.clear();
+    tempExcludedImages.add(winner.name);
+    renderUploaded();
+  }
+
+  // 弧盤候補がオンならタイプ一致のテキストをランダムに1つ選ぶ
+  const kobanOn = isKobanEnabled();
+  let pickedText = null;
+  if (kobanOn && winner.attr) {
+    const checkedTexts = [...document.querySelectorAll('.textCandidate:checked')]
+      .map(el => ({ name: el.value, attr: el.dataset.attr }))
+      .filter(t => t.attr === winner.attr);
+    if (checkedTexts.length > 0) {
+      pickedText = checkedTexts[Math.floor(Math.random() * checkedTexts.length)];
+    }
+  }
+
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const targetId = mode === 'tanki' ? 'tanki-result-main' : 'tanki-result';
+  const resultEl = document.getElementById(targetId);
+  const col = winner.attr ? attrColor(winner.attr) : 'var(--border)';
+  const tc  = winner.attr ? attrTextColor(winner.attr) : '#fff';
+  resultEl.innerHTML = `
+    <div style="background:var(--surface2);border:2px solid #5a8fd4;border-radius:12px;overflow:hidden;animation:fadeUp .3s ease;">
+      ${winner.attr ? `<div style="background:${col};color:${tc};padding:6px 14px;font-size:11px;font-weight:700;">${winner.attr}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;">
+        <img src="${winner.src}" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:2px solid var(--border);flex-shrink:0;">
+        <div>
+          <p style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">🗡️ 単騎抽出結果</p>
+          <p style="font-size:18px;font-weight:700;color:#5a8fd4;">${winner.name}</p>
+          ${pickedText ? `<p style="font-size:14px;font-weight:700;color:var(--text);margin-top:6px;">📝 ${pickedText.name}</p>` : ''}
+          <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">全${pool.length}体から抽出</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+
+// ─── 配布用HTML書き出し ───
+function exportEmbeddedHTML() {
+  const pw = prompt('パスワードを入力してください');
+  if (pw === null) return; // キャンセル
+  if (pw !== 'NTELOVE') {
+    alert('パスワードが違います。');
+    return;
+  }
+
+  // 現在のHTMLソースを取得
+  let newHTML = document.documentElement.outerHTML;
+
+  // TEXT_CANDIDATESの定義ブロックを現在の状態で置き換え
+  const candidatesJSON = JSON.stringify(TEXT_CANDIDATES, null, 2);
+  newHTML = newHTML.replace(
+    /const TEXT_CANDIDATES = \[[\s\S]*?\];/,
+    `const TEXT_CANDIDATES = ${candidatesJSON};`
+  );
+
+  // allImagesを埋め込みデータとして初期化するよう置き換え
+  const imagesJSON = JSON.stringify(allImages.map(img => ({
+    name: img.name,
+    attr: img.attr,
+    src: img.src
+  })));
+  newHTML = newHTML.replace(
+    /\/\/ ─── 初期描画 ───\nloadImagesFromStorage\(\);/,
+    `// ─── 初期描画 ───\nallImages = ${imagesJSON};\ntry { saveImagesToStorage(); } catch(e) {}`
+  );
+
+  const blob = new Blob([newHTML], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  a.download = `NTEキャラ万能ルーレット_配布用_${stamp}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── リセット / クリア ───
+
+function resetAll() {
+  if (!confirm('リセットしますか？\nキャラのON/OFF・弧盤候補・抽出設定がデフォルトに戻ります。（キャラは削除されません）')) return;
+
+  // 除外・履歴クリア
+  tempExcludedTexts.clear();
+  tempExcludedImages.clear();
+  tankiLastPick = null;
+
+  // キャラを全てONに
+  disabledImages.clear();
+
+  // 除外モード：オフ
+  document.getElementById('exclude-mode').checked = false;
+
+  // フィルタ：全画像
+  document.querySelector('input[name="filter"][value="all"]').checked = true;
+
+  // モード：通常抽出
+  document.querySelector('input[name="mode"][value="normal"]').checked = true;
+
+  // 弧盤トグル：ON
+  const kobanToggle = document.getElementById('koban-toggle');
+  kobanToggle.checked = true;
+  document.getElementById('koban-content').classList.remove('disabled');
+  document.getElementById('koban-status').textContent = 'ON';
+  document.getElementById('koban-status').className = 'toggle-status on';
+
+  // 弧盤チェック：全選択
+  document.querySelectorAll('.textCandidate').forEach(cb => { cb.checked = true; });
+  updateCheckCount();
+
+  // モードUI更新
+  document.getElementById('tanki-section') && (document.getElementById('tanki-section').style.display = 'none');
+  document.getElementById('tanki-controls').style.display = 'none';
+  document.getElementById('normal-controls').style.display = 'flex';
+  document.getElementById('koban-section').style.display = 'block';
+  document.getElementById('yonin-options').style.display = 'none';
+
+  // 結果クリア
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('tanki-result-main').innerHTML = '';
+
+  renderUploaded();
+}
+
+function clearAll() {
+  if (confirm('全てクリアしますか？\n※保存済み画像もすべて削除されます。')) {
+    allImages = [];
+    tempExcludedTexts.clear();
+    tempExcludedImages.clear();
+    saveImagesToStorage();
+    renderUploaded();
+    renderTextList();
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('tanki-result-main').innerHTML = '';
+    document.getElementById('tanki-result').innerHTML = '';
+    tankiLastPick = null;
+  }
+}
+
+function deleteAllImages() {
+  if (!confirm('全キャラクターを削除しますか？\nこの操作は元に戻せません。')) return;
+  allImages = [];
+  tempExcludedImages.clear();
+  disabledImages.clear();
+  saveImagesToStorage();
+  renderUploaded();
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('tanki-result-main').innerHTML = '';
+  document.getElementById('tanki-result').innerHTML = '';
+  tankiLastPick = null;
+  document.getElementById('bulk-delete-pw').value = '';
+}
+
+// ─── 初期描画 ───
+allImages = [];
+try { saveImagesToStorage(); } catch(e) {}
+renderUploaded();
+renderTextList();
+</script>
+
+
+
+
+<script>
+function deleteImageByName(name){
+  if(!confirm("画像『"+name+"』を削除しますか？")) return;
+
+  allImages = allImages.filter(img => img.name !== name);
+  tempExcludedImages.delete(name);
+  saveImagesToStorage();
+
+  if(typeof renderUploaded === 'function'){
+    renderUploaded();
+  }
+}
+</script>
+</body></html>
