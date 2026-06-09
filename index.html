@@ -1,4 +1,6 @@
-<html lang="ja"><head>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>NTEキャラ万能ルーレット</title>
@@ -581,6 +583,32 @@
 
 
 
+<!-- 注意事項 -->
+<div class="card" style="margin-bottom:24px;border-color:#e0a0a0;">
+  <h3 style="color:#c06060;">⚠️ ご利用にあたっての注意事項</h3>
+  <div style="font-size:13px;color:var(--text);line-height:2;">
+
+    <p style="font-weight:700;color:#c06060;margin-bottom:4px;">🚫 二次配布禁止</p>
+    <p>このツールを無断で再配布・転載することは禁止します。使用する場合は必ず配布元のURLをご利用ください。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:#c06060;margin-bottom:4px;">🚫 自作発言禁止</p>
+    <p>このツールを自分が作ったかのように発言・紹介することは禁止します。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:#c06060;margin-bottom:4px;">🚫 無断改変禁止</p>
+    <p>ツールの内容を無断で改変・加工して配布することは禁止します。</p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">✅ 利用について</p>
+    <p>個人利用・NTEファン同士でのご使用は歓迎します。ご不明な点は配布者までお問い合わせください。</p>
+
+  </div>
+</div>
+
 <!-- 使い方説明 -->
 <div class="card" style="margin-bottom:24px;">
   <h3>📖 使い方・仕様</h3>
@@ -668,7 +696,7 @@
       <span style="color:#aaa;">※ファイル名に関係なく、登録画面で手動入力・修正もできます</span>
     </span>
   </label>
-  <input type="file" id="file-input" multiple="" accept="image/*" style="display:none;">
+  <input type="file" id="file-input" multiple accept="image/*" style="display:none;">
 </div>
 
 <!-- アップロード済み -->
@@ -689,7 +717,7 @@
   <!-- オン/オフトグル -->
   <div class="koban-toggle-row">
     <label class="toggle-switch">
-      <input type="checkbox" id="koban-toggle" checked="" onchange="handleKobanToggle()">
+      <input type="checkbox" id="koban-toggle" checked onchange="handleKobanToggle()">
       <span class="toggle-slider"></span>
     </label>
     <span class="toggle-label-text">弧盤候補を使用する</span>
@@ -709,153 +737,9 @@
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
       <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="selectAllVisible()">✅ 表示中を全選択</button>
       <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;" onclick="deselectAllVisible()">☐ 表示中を全解除</button>
-      <span id="check-count" style="font-size:12px;color:var(--text-muted);margin-left:4px;">36 / 36 件選択中</span>
+      <span id="check-count" style="font-size:12px;color:var(--text-muted);margin-left:4px;"></span>
     </div>
-    <div id="textList"><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="お散歩ワンワン" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>お散歩ワンワン</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('お散歩ワンワン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="椿会" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>椿会</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('椿会');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="休息日" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>休息日</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('休息日');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="プリペア" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>プリペア</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('プリペア');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="熱狂の渦" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>熱狂の渦</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('熱狂の渦');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="漆黒の青春妄想" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>漆黒の青春妄想</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('漆黒の青春妄想');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="思考ニャン" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>思考ニャン</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('思考ニャン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="炎魂ハリケーン" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>炎魂ハリケーン</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('炎魂ハリケーン');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="永遠のワルツ" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>永遠のワルツ</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('永遠のワルツ');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="ヘテロシティの平穏" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>ヘテロシティの平穏</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('ヘテロシティの平穏');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="現実の避難所" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>現実の避難所</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('現実の避難所');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="仮面の下の涙" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>仮面の下の涙</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('仮面の下の涙');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="鯨の歌" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>鯨の歌</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('鯨の歌');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="時間外を行く" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>時間外を行く</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('時間外を行く');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="「ラスト・ローズ」" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>「ラスト・ローズ」</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('「ラスト・ローズ」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="「傾世の雨」" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>「傾世の雨」</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('「傾世の雨」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="「銀河の残像」" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>「銀河の残像」</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('「銀河の残像」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="忘れな傘" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>忘れな傘</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('忘れな傘');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="光のカーニバル" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>光のカーニバル</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('光のカーニバル');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="輝かしい日々" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>輝かしい日々</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('輝かしい日々');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="忘れられし者" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>忘れられし者</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('忘れられし者');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="オラオラ!" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>オラオラ!</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('オラオラ!');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="ひらめきデスゲーム" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>ひらめきデスゲーム</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('ひらめきデスゲーム');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="呪われた出会い" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>呪われた出会い</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('呪われた出会い');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="頭上に注意!" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>頭上に注意!</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('頭上に注意!');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="空域確保開始" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>空域確保開始</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('空域確保開始');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="言葉にできない" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>言葉にできない</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('言葉にできない');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="抜刀" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>抜刀</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('抜刀');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="いつかは終わる" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>いつかは終わる</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('いつかは終わる');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="愚者が春を蒔く" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>愚者が春を蒔く</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('愚者が春を蒔く');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="歪んだ城の呼び声" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>歪んだ城の呼び声</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('歪んだ城の呼び声');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="危険なゲーム" data-attr="重合体" checked="" onchange="updateCheckCount()">
-        <span>危険なゲーム</span>
-        <span class="tag tag-重合体">重合体</span>
-        <button onclick="removeTextCandidate('危険なゲーム');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="成功への第一歩" data-attr="ソリッド" checked="" onchange="updateCheckCount()">
-        <span>成功への第一歩</span>
-        <span class="tag tag-ソリッド">ソリッド</span>
-        <button onclick="removeTextCandidate('成功への第一歩');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="いつも笑顔で" data-attr="気体" checked="" onchange="updateCheckCount()">
-        <span>いつも笑顔で</span>
-        <span class="tag tag-気体">気体</span>
-        <button onclick="removeTextCandidate('いつも笑顔で');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="「私たち」" data-attr="プラズマ" checked="" onchange="updateCheckCount()">
-        <span>「私たち」</span>
-        <span class="tag tag-プラズマ">プラズマ</span>
-        <button onclick="removeTextCandidate('「私たち」');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label><label style="opacity: 1;">
-        <input type="checkbox" class="textCandidate" value="「電音」カーニバル" data-attr="リキッド" checked="" onchange="updateCheckCount()">
-        <span>「電音」カーニバル</span>
-        <span class="tag tag-リキッド">リキッド</span>
-        <button onclick="removeTextCandidate('「電音」カーニバル');event.preventDefault();" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:0 4px;" title="削除">✕</button></label></div>
+    <div id="textList"></div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">➕ 弧盤候補を追加</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -887,7 +771,7 @@
   <div class="controls-row">
     <span style="font-size:13px;color:var(--text-muted);margin-right:4px;">モード：</span>
     <div class="radio-group">
-      <label><input type="radio" name="mode" value="normal" checked="" onchange="handleModeUI()"> 通常抽出</label>
+      <label><input type="radio" name="mode" value="normal" checked onchange="handleModeUI()"> 通常抽出</label>
       <label><input type="radio" name="mode" value="zenkou" onchange="handleModeUI()"> 前半＋後半同時抽出</label>
       <label><input type="radio" name="mode" value="yonin" onchange="handleModeUI()"> 4人編成</label>
       <label><input type="radio" name="mode" value="tanki" onchange="handleModeUI()"> 🗡️ 単騎抽出</label>
@@ -897,7 +781,7 @@
   <div class="controls-row">
     <span style="font-size:13px;color:var(--text-muted);margin-right:4px;">キャラクター設定：</span>
     <div class="radio-group">
-      <label><input type="radio" name="filter" value="all" checked=""> 全画像</label>
+      <label><input type="radio" name="filter" value="all" checked> 全画像</label>
       <label><input type="radio" name="filter" value="star4"> A ランクのみ</label>
       <label><input type="radio" name="filter" value="star5"> S ランクのみ</label>
     </div>
@@ -943,150 +827,42 @@
 
 <script>
 const TEXT_CANDIDATES = [
-  {
-    "name": "お散歩ワンワン",
-    "attr": "気体"
-  },
-  {
-    "name": "椿会",
-    "attr": "重合体"
-  },
-  {
-    "name": "休息日",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "プリペア",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "熱狂の渦",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "漆黒の青春妄想",
-    "attr": "リキッド"
-  },
-  {
-    "name": "思考ニャン",
-    "attr": "気体"
-  },
-  {
-    "name": "炎魂ハリケーン",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "永遠のワルツ",
-    "attr": "重合体"
-  },
-  {
-    "name": "ヘテロシティの平穏",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "現実の避難所",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "仮面の下の涙",
-    "attr": "気体"
-  },
-  {
-    "name": "鯨の歌",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "時間外を行く",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "「ラスト・ローズ」",
-    "attr": "リキッド"
-  },
-  {
-    "name": "「傾世の雨」",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "「銀河の残像」",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "忘れな傘",
-    "attr": "重合体"
-  },
-  {
-    "name": "光のカーニバル",
-    "attr": "気体"
-  },
-  {
-    "name": "輝かしい日々",
-    "attr": "リキッド"
-  },
-  {
-    "name": "忘れられし者",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "オラオラ!",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "ひらめきデスゲーム",
-    "attr": "リキッド"
-  },
-  {
-    "name": "呪われた出会い",
-    "attr": "重合体"
-  },
-  {
-    "name": "頭上に注意!",
-    "attr": "気体"
-  },
-  {
-    "name": "空域確保開始",
-    "attr": "リキッド"
-  },
-  {
-    "name": "言葉にできない",
-    "attr": "気体"
-  },
-  {
-    "name": "抜刀",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "いつかは終わる",
-    "attr": "重合体"
-  },
-  {
-    "name": "愚者が春を蒔く",
-    "attr": "重合体"
-  },
-  {
-    "name": "歪んだ城の呼び声",
-    "attr": "リキッド"
-  },
-  {
-    "name": "危険なゲーム",
-    "attr": "重合体"
-  },
-  {
-    "name": "成功への第一歩",
-    "attr": "ソリッド"
-  },
-  {
-    "name": "いつも笑顔で",
-    "attr": "気体"
-  },
-  {
-    "name": "「私たち」",
-    "attr": "プラズマ"
-  },
-  {
-    "name": "「電音」カーニバル",
-    "attr": "リキッド"
-  }
+  { name: "お散歩ワンワン",   attr: "気体" },
+  { name: "椿会",             attr: "重合体" },
+  { name: "休息日",           attr: "ソリッド" },
+  { name: "プリペア",         attr: "プラズマ" },
+  { name: "熱狂の渦",         attr: "ソリッド" },
+  { name: "漆黒の青春妄想",   attr: "リキッド" },
+  { name: "思考ニャン",       attr: "気体" },
+  { name: "炎魂ハリケーン",   attr: "プラズマ" },
+  { name: "永遠のワルツ",     attr: "重合体" },
+  { name: "ヘテロシティの平穏", attr: "ソリッド" },
+  { name: "現実の避難所",     attr: "ソリッド" },
+  { name: "仮面の下の涙",     attr: "気体" },
+  { name: "鯨の歌",           attr: "プラズマ" },
+  { name: "時間外を行く",     attr: "ソリッド" },
+  { name: "「ラスト・ローズ」", attr: "リキッド" },
+  { name: "「傾世の雨」",     attr: "ソリッド" },
+  { name: "「銀河の残像」",   attr: "プラズマ" },
+  { name: "忘れな傘",         attr: "重合体" },
+  { name: "光のカーニバル",   attr: "気体" },
+  { name: "輝かしい日々",     attr: "リキッド" },
+  { name: "忘れられし者",     attr: "ソリッド" },
+  { name: "オラオラ!",        attr: "プラズマ" },
+  { name: "ひらめきデスゲーム", attr: "リキッド" },
+  { name: "呪われた出会い",   attr: "重合体" },
+  { name: "頭上に注意!",      attr: "気体" },
+  { name: "空域確保開始",     attr: "リキッド" },
+  { name: "言葉にできない",   attr: "気体" },
+  { name: "抜刀",             attr: "プラズマ" },
+  { name: "いつかは終わる",   attr: "重合体" },
+  { name: "愚者が春を蒔く",   attr: "重合体" },
+  { name: "歪んだ城の呼び声", attr: "リキッド" },
+  { name: "危険なゲーム",     attr: "重合体" },
+  { name: "成功への第一歩",   attr: "ソリッド" },
+  { name: "いつも笑顔で",     attr: "気体" },
+  { name: "「私たち」",       attr: "プラズマ" },
+  { name: "「電音」カーニバル", attr: "リキッド" },
 ];
 
 const ATTRS = ["気体", "重合体", "ソリッド", "プラズマ", "リキッド"];
@@ -1295,43 +1071,59 @@ document.addEventListener('keydown', e => {
   }
 });
 
-function saveImagesToStorage() {
+// ─── IndexedDB 永続保存 ───
+const DB_NAME = 'NTERoulette';
+const DB_VERSION = 1;
+const STORE_NAME = 'images';
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (db) { resolve(db); return; }
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE_NAME)) {
+        d.createObjectStore(STORE_NAME, { keyPath: 'name' });
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+async function saveImagesToStorage() {
   try {
-    // Base64画像はサイズが大きいため分割保存
-    localStorage.setItem('nte_images_meta', JSON.stringify(
-      allImages.map(img => ({ name: img.name, attr: img.attr, rank: img.rank ?? null }))
-    ));
-    allImages.forEach((img, i) => {
-      localStorage.setItem('nte_img_' + i, img.src);
-    });
-    // 古いインデックスを削除
-    let i = allImages.length;
-    while (localStorage.getItem('nte_img_' + i) !== null) {
-      localStorage.removeItem('nte_img_' + i);
-      i++;
-    }
+    const d = await openDB();
+    const tx = d.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    // 全件クリアして書き直し
+    store.clear();
+    allImages.forEach(img => store.put({ name: img.name, attr: img.attr, rank: img.rank ?? null, src: img.src }));
   } catch(e) {
-    console.warn('画像の保存に失敗しました（容量超過の可能性）:', e);
+    console.warn('画像の保存に失敗しました:', e);
   }
 }
 
-function loadImagesFromStorage() {
+async function loadImagesFromStorage() {
   try {
-    const meta = localStorage.getItem('nte_images_meta');
-    if (!meta) return;
-    const metas = JSON.parse(meta);
-    allImages = [];
-    metas.forEach((m, i) => {
-      const src = localStorage.getItem('nte_img_' + i);
-      if (src) {
-        // 旧データ互換：nameにタイプやランクが残っていれば再クリーン
+    const d = await openDB();
+    const tx = d.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.getAll();
+    req.onsuccess = e => {
+      const records = e.target.result;
+      if (!records || records.length === 0) { renderUploaded(); return; }
+      allImages = records.map(m => {
         const cleanedName = cleanName(m.name + '.dummy');
         const rank = m.rank ?? detectRank(m.name);
-        allImages.push({ name: cleanedName, attr: m.attr, rank, src });
-      }
-    });
+        return { name: cleanedName, attr: m.attr, rank, src: m.src };
+      });
+      renderUploaded();
+    };
   } catch(e) {
     console.warn('画像の読み込みに失敗しました:', e);
+    renderUploaded();
   }
 }
 
@@ -1925,8 +1717,8 @@ function exportEmbeddedHTML() {
     src: img.src
   })));
   newHTML = newHTML.replace(
-    /\/\/ ─── 初期描画 ───\nloadImagesFromStorage\(\);/,
-    `// ─── 初期描画 ───\nallImages = ${imagesJSON};\ntry { saveImagesToStorage(); } catch(e) {}`
+    /\/\/ ─── 初期描画 ───\n\(async \(\) => \{[\s\S]*?\}\)\(\)/,
+    `// ─── 初期描画 ───\n(async () => {\n  allImages = ${imagesJSON};\n  try { await saveImagesToStorage(); } catch(e) {}\n  renderUploaded();\n  renderTextList();\n})()`
   );
 
   const blob = new Blob([newHTML], { type: 'text/html;charset=utf-8' });
@@ -2017,13 +1809,13 @@ function deleteAllImages() {
 }
 
 // ─── 初期描画 ───
-allImages = [];
-try { saveImagesToStorage(); } catch(e) {}
-renderUploaded();
-renderTextList();
+(async () => {
+  await loadImagesFromStorage();
+  renderTextList();
+})()
 </script>
-
-
+</body>
+</html>
 
 
 <script>
@@ -2039,4 +1831,3 @@ function deleteImageByName(name){
   }
 }
 </script>
-</body></html>
