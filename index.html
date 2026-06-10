@@ -826,9 +826,9 @@
         </select>
       </div>
       <div class="modal-field">
-        <label>ランク</label>
+        <label>ランク *</label>
         <select id="edit-rank">
-          <option value="">なし</option>
+          <option value="">-- 選択してください --</option>
           <option value="5">S（★5相当）</option>
           <option value="4">A（★4相当）</option>
         </select>
@@ -890,7 +890,7 @@
       <div class="modal-field">
         <label>ランク</label>
         <select id="modal-rank">
-          <option value="">-- 選択してください（任意）--</option>
+          <option value="">-- 選択してください --</option>
           <option value="5">S（★5相当）</option>
           <option value="4">A（★4相当）</option>
         </select>
@@ -930,7 +930,7 @@
     <strong>ここをタップして画像を選択</strong><br>
     <span style="font-size:13px;line-height:1.8;">
       📝 <strong>自動認識ファイル名形式：</strong><code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク_性別_凸.jpg</code>（ランク以降は省略可）<br>
-      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_S_女_2凸.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_A.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ゼウス_プラズマ.jpg</code><br>
+      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_S_女_2凸.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_A.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ナナリ_プラズマ.jpg</code><br>
       ランク：A/4/星4/☆4/★4・S/5/星5/☆5/★5　性別：女/♀/メス/雌/女性/female・男/♂/オス/雄/男性/male　凸：0〜6の数字 or 無凸〜完凸<br>
       <span style="color:#aaa;">※ファイル名に関係なく、登録画面で手動入力・修正もできます</span>
     </span>
@@ -1646,8 +1646,13 @@ function confirmRegister() {
   document.getElementById('modal-name').style.borderColor = '';
   document.getElementById('modal-attr').style.borderColor = '';
 
-  const rank = document.getElementById('modal-rank').value
-    ? parseInt(document.getElementById('modal-rank').value) : null;
+  if (!document.getElementById('modal-rank').value) {
+    document.getElementById('modal-rank').style.borderColor = '#c44';
+    return;
+  }
+  document.getElementById('modal-rank').style.borderColor = '';
+
+  const rank = parseInt(document.getElementById('modal-rank').value);
   const gender = document.getElementById('modal-gender').value || null;
   const tMaxRaw = document.getElementById('modal-totsuki-max').value;
   const totsuki_max = tMaxRaw !== '' ? parseInt(tMaxRaw) : null;
@@ -1768,7 +1773,12 @@ function saveEditModal() {
   document.getElementById('edit-name').style.borderColor = '';
   document.getElementById('edit-attr').style.borderColor = '';
 
-  const newRank = document.getElementById('edit-rank').value ? parseInt(document.getElementById('edit-rank').value) : null;
+  if (!document.getElementById('edit-rank').value) {
+    document.getElementById('edit-rank').style.borderColor = '#c44';
+    return;
+  }
+  document.getElementById('edit-rank').style.borderColor = '';
+  const newRank = parseInt(document.getElementById('edit-rank').value);
   const newGender = document.getElementById('edit-gender').value || null;
   const tMaxRaw = document.getElementById('edit-totsuki-max').value;
   const totsuki_max = tMaxRaw !== '' ? parseInt(tMaxRaw) : null;
