@@ -284,8 +284,8 @@
 
   .pair-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
     margin-bottom: 24px;
   }
 
@@ -306,17 +306,17 @@
   }
 
   .pair-card .pair-attr {
-    padding: 8px 14px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-    display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 4px;
   }
   .pair-card img {
-    width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+    width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block;
   }
-  .pair-card .pair-body { padding: 12px 14px; }
-  .pair-card .pair-img-name { font-size: 14px; color: #111; font-weight: 700; margin-bottom: 6px; }
-  .pair-card .pair-text-name { font-size: 15px; font-weight: 700; color: #111; }
-  .pair-card .no-image { width: 100%; aspect-ratio: 4/3; background: #ffffff; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; }
+  .pair-card .pair-body { padding: 8px 10px; }
+  .pair-card .pair-img-name { font-size: 12px; color: #111; font-weight: 700; margin-bottom: 3px; }
+  .pair-card .pair-text-name { font-size: 12px; font-weight: 700; color: #111; }
+  .pair-card .no-image { width: 100%; aspect-ratio: 1/1; background: #ffffff; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; }
 
   .solo-section { margin-bottom: 20px; }
   .solo-section h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
@@ -555,6 +555,96 @@
     color: var(--text-muted); font-size: 13px;
   }
 
+  /* ─── 編集モーダル ─── */
+  #edit-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #edit-overlay.active { display: flex; }
+  #edit-modal {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%; max-width: 460px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    animation: fadeUp .25s ease;
+  }
+  #edit-modal .modal-header {
+    background: #5a8fd4;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #edit-modal .modal-header h3 { color: #fff; font-size: 15px; letter-spacing: 0.05em; margin: 0; }
+  #edit-modal .modal-body { padding: 18px; }
+  #edit-modal .modal-preview {
+    width: 100%; max-height: 180px; object-fit: cover;
+    border-radius: 10px; margin-bottom: 14px;
+    border: 2px solid var(--border); display: block;
+  }
+  #edit-modal .modal-preview-none {
+    width: 100%; height: 100px; background: var(--surface2);
+    border-radius: 10px; margin-bottom: 14px;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px;
+  }
+  #edit-modal .modal-field { margin-bottom: 12px; }
+  #edit-modal .modal-field label {
+    display: block; font-size: 12px; color: var(--text-muted);
+    margin-bottom: 5px; font-weight: 700;
+  }
+  #edit-modal .modal-field input,
+  #edit-modal .modal-field select {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-size: 15px; outline: none;
+  }
+  #edit-modal .modal-field input:focus,
+  #edit-modal .modal-field select:focus { border-color: #5a8fd4; }
+  #edit-modal .modal-actions {
+    display: flex; gap: 10px; padding: 0 18px 18px;
+  }
+  #edit-modal .modal-actions .btn { flex: 1; }
+
+  /* 凸設定詳細 */
+  .totsuki-detail-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: 8px; padding: 10px 12px;
+    background: var(--surface2); border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .totsuki-checkboxes {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  .totsuki-check-item {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px;
+    background: #fff; border: 1px solid var(--border);
+    font-size: 12px; cursor: pointer;
+  }
+  .totsuki-check-item input { accent-color: var(--accent); }
+
+  /* サムネをクリック可能に */
+  .thumb-img-clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  .thumb-img-clickable::after {
+    content: '✏️';
+    position: absolute; bottom: 4px; right: 4px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; opacity: 0;
+    transition: opacity .15s;
+  }
+  .thumb-img-clickable:hover::after { opacity: 1; }
+
 </style>
 </head>
 <body>
@@ -614,34 +704,162 @@
   <h3>📖 使い方・仕様</h3>
   <div style="font-size:13px;color:var(--text);line-height:2;">
 
+    <!-- ① キャラ登録 -->
     <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🖼 キャラクターの登録</p>
-    <p>「ここをタップして画像を選択」から画像を選ぶと登録画面が開きます。キャラ名・タイプ・ランク（A / S）を入力して「登録」を押すと一覧に追加されます。複数枚選択すると1枚ずつ順番に登録できます。登録データはブラウザに自動保存されるため、次回以降は開くだけで使えます（※ブラウザのキャッシュをクリアすると消えます）。</p>
-
-    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
-
-    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">📝 弧盤候補</p>
-    <p>抽出時にキャラとペアになるテキスト（弧盤）の候補一覧です。チェックボックスで使用する候補を選択できます。右上のトグルで弧盤候補ごとオン/オフが可能です。オフにした場合は画像のみで抽出されます。候補の追加・削除も自由にできます。</p>
-
-    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
-
-    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⚙️ 抽出設定</p>
     <p>
-      <strong>通常抽出</strong>：タイプが一致するキャラと弧盤をランダムに1〜4組抽出します。<br>
-      <strong>前半＋後半同時抽出</strong>：キャラ・弧盤をそれぞれ前半・後半に分けて抽出します。<br>
-      <strong>4人編成</strong>：キャラを4人固定で抽出します。「前半後半に対応する」をオンにすると前半4人・後半4人の計8人が抽出されます。<br>
-      <strong>🗡️ 単騎抽出</strong>：全キャラの中から1体だけ抽出します。弧盤候補がオンの場合はタイプ一致の弧盤も同時に抽出されます。
+      キャラの登録方法は2種類あります。<br>
+      <strong>① 画像から登録</strong>：「ここをタップして画像を選択」で画像を選ぶと登録モーダルが開きます。キャラ名・タイプ・ランク・性別（任意）・凸最大値（任意）を設定して「登録」を押すと一覧に追加されます。複数枚選択した場合は1枚ずつ順番に登録できます。<br>
+      <strong>② 手動登録（画像なし）</strong>：画像がなくてもキャラ名・タイプ・ランク・性別・凸を入力して登録できます。抽出時はグレーのアイコンで表示されます。<br>
+      <strong>ファイル名自動認識</strong>：<code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">キャラ名_タイプ_ランク_性別_凸.jpg</code> の形式で命名されたファイルは、各項目が自動入力されます（ランク以降は省略可）。<br>
+      　ランク：A / 4 / 星4 / ☆4 / ★4　または　S / 5 / 星5 / ☆5 / ★5<br>
+      　性別：女 / ♀ / メス / 雌 / 女性 / female　または　男 / ♂ / オス / 雄 / 男性 / male<br>
+      　凸：0〜6の数字　または　無凸 / 1凸 / 2凸 / 3凸 / 4凸 / 5凸 / 完凸<br>
+      <strong>データの保存</strong>：登録データはブラウザに自動保存されます。次回以降は開くだけでそのまま使えます（※ブラウザのキャッシュをクリアすると消えます）。
     </p>
 
     <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
 
-    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⭐ キャラクター設定</p>
-    <p>「全画像」「Aのみ」「Sのみ」で抽出対象を絞り込めます。</p>
+    <!-- ② 編集・削除 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">✏️ キャラクターの編集・削除</p>
+    <p>
+      キャラ一覧の画像（またはアイコン）をクリック／タップすると編集モーダルが開き、以下の項目を変更できます。<br>
+      　・ キャラ名　・ タイプ　・ ランク（A / S）　・ 性別（♂ / ♀）　・ 凸最大値（無凸〜完凸）<br>
+      各キャラ右下の「ON / OFF」トグルをオフにすると、そのキャラは一時的に抽出対象から外れます。「🗑 削除」で完全に削除できます。
+    </p>
 
     <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
 
-    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🔄 除外機能</p>
-    <p>「一度抽出した項目を次の1回だけ除外する」をオンにすると、抽出されたキャラは次の1回は必ず除外されます。単騎抽出モードでも同様に機能し、オフの場合は全モードで完全ランダム（被りあり）になります。除外リセットボタンで手動リセットも可能です。</p>
+    <!-- ③ キャラクター設定（フィルタ） -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⭐ キャラクター設定（ランクフィルタ）</p>
+    <p>
+      抽出対象をランクで絞り込めます。<br>
+      　・ <strong>全画像</strong>：登録済み全キャラが対象<br>
+      　・ <strong>Aのみ</strong>：ランクAのキャラのみが対象<br>
+      　・ <strong>Sのみ</strong>：ランクSのキャラのみが対象<br>
+      ランク未設定のキャラは「全画像」時のみ対象になります。
+    </p>
 
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <!-- ④ 弧盤候補 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">📝 弧盤候補</p>
+    <p>
+      抽出時にキャラとペアで表示されるテキスト（弧盤）の候補一覧です。<br>
+      　・ チェックボックスで使用する候補を個別にオン／オフできます<br>
+      　・ 右上の「弧盤候補」トグルをオフにすると弧盤機能ごと無効化され、キャラのみ抽出されます<br>
+      　・ 候補の追加・削除も自由にできます
+    </p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <!-- ⑤ 抽出設定 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">⚙️ 抽出設定（モード）</p>
+    <p>
+      <strong>通常抽出</strong>：タイプが一致するキャラと弧盤をランダムに1〜4組抽出します。<br>
+      <strong>前半＋後半同時抽出</strong>：前半・後半それぞれにキャラと弧盤を抽出します。編成を前後半で分けたいときに使います。<br>
+      <strong>4人編成</strong>：キャラを4人固定で抽出します。「前半後半に対応する」をオンにすると前半4人・後半4人の計8人が一度に抽出されます。<br>
+      <strong>単騎抽出</strong>：全キャラの中から1体だけ抽出します。弧盤候補がオンの場合、タイプ一致の弧盤も同時に抽出されます。連続で押すと前回と同じキャラが連続して出ないよう除外機能と連動します。
+    </p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <!-- ⑥ 凸ランダム機能 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🎯 凸ランダム機能</p>
+    <p>
+      抽出時にキャラの凸数をランダムで表示できます。「凸ランダム機能を使用する」をオンにして使います。<br>
+      <strong>完全ランダム</strong>：各キャラの凸最大値の範囲内で無凸〜上限までランダム抽出します。<br>
+      <strong>範囲指定ランダム</strong>：チェックボックスで抽出したい凸数を指定できます。キャラの凸最大値を超える値は自動的に除外されます。<br>
+      <strong>キャラ別事前設定</strong>：登録・編集時に設定した凸最大値をもとに、キャラごとの上限内でランダム抽出します。キャラ画像をクリックして編集モーダルから設定してください。<br>
+      ※ どのモードでも、キャラに凸最大値が設定されている場合はその上限を超えることはありません。
+    </p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <!-- ⑦ 除外機能 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🚫 除外機能</p>
+    <p>
+      「一度抽出した項目を次の1回だけ除外する」をオンにすると、抽出されたキャラは次の1回は抽出対象から外れます。連続で同じキャラが出るのを防ぎたいときに便利です。<br>
+      　・ 全抽出モード（通常・前半後半・4人・単騎）に対応しています<br>
+      　・ 「除外リセット」ボタンで除外状態をいつでも手動で解除できます<br>
+      　・ オフにすると全モードで完全ランダム（被りあり）になります
+    </p>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+
+    <!-- ⑧ 追加縛り機能 -->
+    <p style="font-weight:700;color:var(--accent);margin-bottom:4px;">🔒 追加縛り機能</p>
+    <p>
+      抽出結果に一緒に表示するプレイ縛りを自由に登録できます。メモ欄に1行ずつ縛りを入力し、「追加縛りを使用する」をオンにすると抽出時に縛りが表示されます。<br>
+      <strong>抽出モードは3種類：</strong><br>
+      　・ <strong>ランダムで1つ</strong>：登録された縛りの中からランダムで1つ表示<br>
+      　・ <strong>指定した数</strong>：表示する縛りの数を手動で指定<br>
+      　・ <strong>無制限（数もランダム）</strong>：数も内容もランダムで表示<br>
+      <strong>特殊キーワード（性別縛り）：</strong><br>
+      　メモに <code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">男性のみ</code> または <code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">女性のみ</code> と書くと、そのキーワードが選ばれたとき抽出プールをその性別のキャラに絞り込みます。性別はキャラの登録・編集時に「性別」欄（♂/♀）で設定してください（未設定キャラはフィルタ対象外）。
+    </p>
+
+  </div>
+</div>
+
+<!-- キャラ編集モーダル -->
+<div id="edit-overlay">
+  <div id="edit-modal">
+    <div class="modal-header">
+      <h3>✏️ キャラクター編集</h3>
+      <button onclick="closeEditModal()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="edit-preview-wrap"></div>
+      <div class="modal-field">
+        <label>キャラ名 *</label>
+        <input type="text" id="edit-name" placeholder="例：ちぃちゃん">
+      </div>
+      <div class="modal-field">
+        <label>タイプ *</label>
+        <select id="edit-attr">
+          <option value="">-- 選択してください --</option>
+          <option value="気体">気体</option>
+          <option value="重合体">重合体</option>
+          <option value="ソリッド">ソリッド</option>
+          <option value="プラズマ">プラズマ</option>
+          <option value="リキッド">リキッド</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>ランク</label>
+        <select id="edit-rank">
+          <option value="">なし</option>
+          <option value="5">S（★5相当）</option>
+          <option value="4">A（★4相当）</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>性別</label>
+        <select id="edit-gender">
+          <option value="">未設定</option>
+          <option value="male">♂ 男性</option>
+          <option value="female">♀ 女性</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>凸（枠解放）最大値</label>
+        <select id="edit-totsuki-max">
+          <option value="">設定なし（完全ランダム）</option>
+          <option value="0">無凸（固定）</option>
+          <option value="1">1凸まで</option>
+          <option value="2">2凸まで</option>
+          <option value="3">3凸まで</option>
+          <option value="4">4凸まで</option>
+          <option value="5">5凸まで</option>
+          <option value="6">完凸まで（無凸〜完凸）</option>
+        </select>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">無凸〜設定した凸数の範囲でランダム抽出。</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);" onclick="closeEditModal()">キャンセル</button>
+      <button class="btn btn-primary" style="background:#5a8fd4;color:#fff;" onclick="saveEditModal()">💾 保存</button>
+    </div>
   </div>
 </div>
 
@@ -677,6 +895,27 @@
           <option value="4">A（★4相当）</option>
         </select>
       </div>
+      <div class="modal-field">
+        <label>性別（任意）</label>
+        <select id="modal-gender">
+          <option value="">-- 設定しない --</option>
+          <option value="male">男性</option>
+          <option value="female">女性</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>凸 最大値（任意）</label>
+        <select id="modal-totsuki-max">
+          <option value="">-- 設定しない --</option>
+          <option value="0">無凸（固定）</option>
+          <option value="1">1凸まで</option>
+          <option value="2">2凸まで</option>
+          <option value="3">3凸まで</option>
+          <option value="4">4凸まで</option>
+          <option value="5">5凸まで</option>
+          <option value="6">完凸まで（無凸〜完凸）</option>
+        </select>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn modal-skip-btn" onclick="skipRegister()">キャンセル</button>
@@ -690,13 +929,66 @@
   <label for="file-input" style="cursor:pointer;display:block;">
     <strong>ここをタップして画像を選択</strong><br>
     <span style="font-size:13px;line-height:1.8;">
-      📝 <strong>自動認識ファイル名形式：</strong><code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク.jpg</code><br>
-      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_5.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_S.jpg</code><br>
-      タイプ：気体 / 重合体 / ソリッド / プラズマ / リキッド　ランク：4 or A（Aランク）/ 5 or S（Sランク）（省略可）<br>
+      📝 <strong>自動認識ファイル名形式：</strong><code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク_性別_凸.jpg</code>（ランク以降は省略可）<br>
+      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_S_女_2凸.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_A.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ゼウス_プラズマ.jpg</code><br>
+      ランク：A/4/星4/☆4/★4・S/5/星5/☆5/★5　性別：女/♀/メス/雌/女性/female・男/♂/オス/雄/男性/male　凸：0〜6の数字 or 無凸〜完凸<br>
       <span style="color:#aaa;">※ファイル名に関係なく、登録画面で手動入力・修正もできます</span>
     </span>
   </label>
   <input type="file" id="file-input" multiple accept="image/*" style="display:none;">
+</div>
+
+<!-- 手動登録フォーム -->
+<div class="card" id="manual-register-card" style="margin-bottom:20px;">
+  <h3>✏️ 手動登録（画像なし）</h3>
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">画像なしでキャラ名・タイプ・ランクだけ登録できます。抽出時はグレーのアイコンで表示されます。</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="display:flex;flex-direction:column;gap:4px;flex:2;min-width:120px;">
+      <label style="font-size:12px;color:var(--text-muted);">キャラ名 *</label>
+      <input type="text" id="manual-name" placeholder="例：ちぃちゃん" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:12px;color:var(--text-muted);">タイプ *</label>
+      <select id="manual-attr" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;cursor:pointer;">
+        <option value="">-- 選択 --</option>
+        <option value="気体">気体</option>
+        <option value="重合体">重合体</option>
+        <option value="ソリッド">ソリッド</option>
+        <option value="プラズマ">プラズマ</option>
+        <option value="リキッド">リキッド</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:12px;color:var(--text-muted);">ランク</label>
+      <select id="manual-rank" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;cursor:pointer;">
+        <option value="">なし</option>
+        <option value="4">A</option>
+        <option value="5">S</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:12px;color:var(--text-muted);">性別（任意）</label>
+      <select id="manual-gender" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;cursor:pointer;">
+        <option value="">設定しない</option>
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:12px;color:var(--text-muted);">凸 最大値（任意）</label>
+      <select id="manual-totsuki-max" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;outline:none;cursor:pointer;">
+        <option value="">設定しない</option>
+        <option value="0">無凸（固定）</option>
+        <option value="1">1凸まで</option>
+        <option value="2">2凸まで</option>
+        <option value="3">3凸まで</option>
+        <option value="4">4凸まで</option>
+        <option value="5">5凸まで</option>
+        <option value="6">完凸まで</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="font-size:13px;padding:9px 20px;" onclick="addManualCharacter()">登録</button>
+  </div>
 </div>
 
 <!-- アップロード済み -->
@@ -757,6 +1049,58 @@
   </div>
 </div>
 
+<!-- 追加縛り -->
+<div class="card" id="shibari-section">
+  <h3>🔒 追加縛り</h3>
+
+  <!-- ON/OFFトグル -->
+  <div class="koban-toggle-row">
+    <label class="toggle-switch">
+      <input type="checkbox" id="shibari-toggle" onchange="handleShibariToggle()">
+      <span class="toggle-slider"></span>
+    </label>
+    <span class="toggle-label-text">追加縛りを使用する</span>
+    <span class="toggle-status off" id="shibari-status">OFF</span>
+  </div>
+
+  <!-- 縛りコンテンツ（オフ時に淡色化） -->
+  <div id="shibari-content" style="opacity:0.35;pointer-events:none;user-select:none;transition:opacity .2s;">
+
+    <!-- 抽出モード -->
+    <div style="margin-bottom:12px;">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:700;">抽出モード</p>
+      <div class="radio-group" id="shibari-mode-group">
+        <label><input type="radio" name="shibari-mode" value="one" checked onchange="handleShibariModeChange()"> ランダムで1つ</label>
+        <label><input type="radio" name="shibari-mode" value="count" onchange="handleShibariModeChange()"> 指定した数</label>
+        <label><input type="radio" name="shibari-mode" value="unlimited" onchange="handleShibariModeChange()"> 無制限（数もランダム）</label>
+      </div>
+      <!-- 指定数UI -->
+      <div id="shibari-count-ui" style="display:none;margin-top:8px;padding:8px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:13px;">抽出する縛りの数：</span>
+        <input type="number" id="shibari-count-num" value="2" min="1" max="20"
+          style="width:64px;padding:5px 8px;border-radius:6px;border:1px solid var(--border);
+                 background:#fff;color:var(--text);font-size:14px;font-weight:700;outline:none;text-align:center;">
+        <span style="font-size:12px;color:var(--text-muted);">件（登録数を超える場合は全て表示）</span>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+      メモ欄に縛り内容を1行ずつ入力してください。<br>
+      <span style="color:#c06060;font-size:11px;">⚠️ 性別縛りをする場合は事前にキャラの性別を設定してください（任意）</span>
+    </p>
+    <textarea id="shibari-memo"
+      placeholder="例：&#10;スキル1のみ使用&#10;ガード禁止&#10;回復アイテム禁止&#10;1ターンキル縛り"
+      style="width:100%;height:130px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);
+             background:var(--surface2);color:var(--text);font-size:13px;outline:none;
+             resize:vertical;line-height:1.8;font-family:inherit;"></textarea>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span id="shibari-count" style="font-size:12px;color:var(--text-muted);">0 件登録中</span>
+      <button class="btn btn-ghost" style="font-size:12px;padding:5px 14px;" onclick="previewShibari()">👁 縛り一覧を確認</button>
+    </div>
+    <div id="shibari-preview-list" style="display:none;margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);font-size:13px;line-height:2;"></div>
+  </div>
+</div>
+
 <!-- コントロール -->
 <div class="card">
   <h3>抽出設定</h3>
@@ -793,6 +1137,48 @@
       <input type="checkbox" id="yonin-zenkou" style="accent-color:var(--accent);width:16px;height:16px;">
       <span>前半後半に対応する（前半4人・後半4人　計8人抽出）</span>
     </label>
+  </div>
+
+  <!-- 凸ランダム設定 -->
+  <div class="controls-row" style="flex-direction:column;align-items:flex-start;gap:8px;padding:12px 14px;background:var(--surface2);border-radius:8px;margin-bottom:4px;">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <label class="toggle-label">
+        <input type="checkbox" id="totsuki-mode" onchange="handleTotsukiToggle()">
+        凸ランダム機能を使用する
+      </label>
+      <span id="totsuki-status" style="font-size:11px;font-weight:700;color:var(--text-muted);">OFF</span>
+      <span style="color:var(--border);font-size:14px;">|</span>
+      <label class="toggle-label">
+        <input type="checkbox" id="skill-random-mode">
+        スキルランダム
+      </label>
+      <span id="skill-random-status" style="font-size:11px;font-weight:700;color:var(--text-muted);">OFF</span>
+    </div>
+    <div id="totsuki-options" style="display:none;margin-left:4px;width:100%;">
+
+      <div class="radio-group" style="margin-bottom:10px;">
+        <label><input type="radio" name="totsuki-type" value="random" checked onchange="handleTotsukiTypeChange()"> 完全ランダム（0〜6凸）</label>
+        <label><input type="radio" name="totsuki-type" value="range" onchange="handleTotsukiTypeChange()"> 範囲指定ランダム</label>
+        <label><input type="radio" name="totsuki-type" value="preset" onchange="handleTotsukiTypeChange()"> キャラ別事前設定</label>
+      </div>
+      <!-- 範囲指定ランダム -->
+      <div id="totsuki-range-ui" style="display:none;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;">
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">抽出する凸を選択（複数可）：</p>
+        <div class="totsuki-checkboxes" id="global-totsuki-checks">
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="0" checked> 無凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="1" checked> 1凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="2" checked> 2凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="3" checked> 3凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="4" checked> 4凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="5" checked> 5凸</label>
+          <label class="totsuki-check-item"><input type="checkbox" name="global-totsuki-val" value="6" checked> 完凸</label>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="globalTotsukiSelectAll()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:#f8f8f8;cursor:pointer;">全選択</button>
+          <button onclick="globalTotsukiDeselectAll()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:#f8f8f8;cursor:pointer;">全解除</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 通常・前半後半モード用ボタン -->
@@ -894,44 +1280,260 @@ function handleKobanToggle() {
   status.className = 'toggle-status ' + (enabled ? 'on' : 'off');
 }
 
+
+// 結果下部ボタンを生成
+function bottomButtonsHtml() {
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const extractFn = mode === 'tanki' ? 'extractTanki()' : 'randomExtract()';
+  return `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;">
+    <button class="btn btn-primary" onclick="${extractFn}" style="flex:1;min-width:120px;">🎲 抽出実行</button>
+    <button class="btn btn-ghost" onclick="resetAll()" style="flex:1;min-width:120px;">リセット</button>
+  </div>`;
+}
+
+// ─── 追加縛り ───
+function isShibariEnabled() {
+  return document.getElementById('shibari-toggle').checked;
+}
+
+function handleShibariToggle() {
+  const enabled = isShibariEnabled();
+  const content = document.getElementById('shibari-content');
+  content.style.opacity = enabled ? '1' : '0.35';
+  content.style.pointerEvents = enabled ? 'auto' : 'none';
+  content.style.userSelect = enabled ? 'auto' : 'none';
+  const status = document.getElementById('shibari-status');
+  status.textContent = enabled ? 'ON' : 'OFF';
+  status.className = 'toggle-status ' + (enabled ? 'on' : 'off');
+}
+
+function getShibariItems() {
+  const raw = document.getElementById('shibari-memo').value;
+  return raw.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+}
+
+function handleShibariModeChange() {
+  const mode = document.querySelector('input[name="shibari-mode"]:checked')?.value;
+  const countUI = document.getElementById('shibari-count-ui');
+  if (countUI) countUI.style.display = mode === 'count' ? 'flex' : 'none';
+}
+
+// 縛りをランダムに選んで配列で返す
+// 戻り値: { items: string[], genderFilter: null | 'male' | 'female' }
+function pickShibariItems() {
+  if (!isShibariEnabled()) return { items: [], genderFilter: null };
+  const allItems = getShibariItems();
+  if (allItems.length === 0) return { items: [], genderFilter: null };
+
+  // 性別キーワードを分類
+  const GENDER_KEYWORDS = {
+    male:   ['男性キャラのみ', '男性のみ', '♂のみ', '男のみ', '雄のみ', 'オスのみ', '女性禁止', '女禁止', '♀禁止', '雌禁止', 'メス禁止'],
+    female: ['女性キャラのみ', '女性のみ', '♀のみ', '女のみ', '雌のみ', 'メスのみ', '男性禁止', '男禁止', '♂禁止', '雄禁止', 'オス禁止'],
+  };
+  const normalItems = allItems.filter(item =>
+    !GENDER_KEYWORDS.male.includes(item) && !GENDER_KEYWORDS.female.includes(item)
+  );
+  const genderItems = allItems.filter(item =>
+    GENDER_KEYWORDS.male.includes(item) || GENDER_KEYWORDS.female.includes(item)
+  );
+
+  const mode = document.querySelector('input[name="shibari-mode"]:checked')?.value ?? 'one';
+
+  // ── ランダム1つモード：従来通り全体から1つ ──
+  if (mode === 'one') {
+    const allPool = [...allItems].sort(() => Math.random() - 0.5);
+    const picked = allPool[0];
+    let genderFilter = null, genderKeyword = null, items = [];
+    if (GENDER_KEYWORDS.male.includes(picked))        { genderFilter = 'male';   genderKeyword = picked; }
+    else if (GENDER_KEYWORDS.female.includes(picked)) { genderFilter = 'female'; genderKeyword = picked; }
+    else items = [picked];
+    return { items, genderFilter, genderKeyword, mode: 'one' };
+  }
+
+  // ── 指定数 / 無制限モード：性別縛りは枠の1つとしてカウント ──
+  let targetCount;
+  if (mode === 'count') {
+    targetCount = Math.max(1, parseInt(document.getElementById('shibari-count-num')?.value) || 1);
+  } else {
+    // unlimited：通常縛り＋性別縛りの合計数でランダム（最低1）
+    const maxAll = Math.max(1, normalItems.length + (genderItems.length > 0 ? 1 : 0));
+    targetCount = Math.floor(Math.random() * maxAll) + 1;
+  }
+
+  // 性別縛りを使うかどうか抽選（枠の1つを使う）
+  let genderFilter = null, genderKeyword = null;
+  let normalCount = targetCount; // 通常縛りに割り当てる枠数
+
+  if (genderItems.length > 0 && targetCount >= 1) {
+    // 通常縛りがない場合は必ず性別縛りを使う、ある場合は50%
+    const useGender = normalItems.length === 0 || Math.random() < 0.5;
+    if (useGender) {
+      const shuffledGender = [...genderItems].sort(() => Math.random() - 0.5);
+      const g = shuffledGender[0];
+      if (GENDER_KEYWORDS.male.includes(g))        { genderFilter = 'male';   genderKeyword = g; }
+      else if (GENDER_KEYWORDS.female.includes(g)) { genderFilter = 'female'; genderKeyword = g; }
+      normalCount = targetCount - 1; // 性別縛りで1枠消費
+    }
+  }
+
+  // 通常縛りをシャッフルしてnormalCount分取得
+  const shuffledNormal = [...normalItems].sort(() => Math.random() - 0.5);
+  const pickedNormal = shuffledNormal.slice(0, Math.min(normalCount, shuffledNormal.length));
+
+  return { items: pickedNormal, genderFilter, genderKeyword, mode };
+}
+
+// 性別フィルタを画像プールに適用
+function applyGenderFilter(pool, genderFilter) {
+  if (!genderFilter) return pool;
+  const maleValues   = ['male', '♂', '男', '男性', '雄', 'オス'];
+  const femaleValues = ['female', '♀', '女', '女性', '雌', 'メス'];
+  const matchValues  = genderFilter === 'male' ? maleValues : femaleValues;
+  const filtered = pool.filter(img => img.gender && matchValues.includes(img.gender));
+  return filtered.length > 0 ? filtered : pool;
+}
+
+// 縛り結果のHTML生成
+function buildShibariHtml({ items, genderFilter, genderKeyword = null, mode = 'one' }) {
+  const hasItems = items && items.length > 0;
+  if (!hasItems && !genderFilter) return '';
+
+  // 性別縛りバッジHTML（あれば）
+  let genderHtml = '';
+  if (genderFilter) {
+    const label = genderKeyword || (genderFilter === 'male' ? '男性キャラのみ' : '女性キャラのみ');
+    const isMaleIcon = label.includes('男') || label.includes('♂') || label.includes('雄') || label.includes('オス');
+    const icon = isMaleIcon ? '♂' : '♀';
+    const bg   = isMaleIcon ? 'rgba(60,120,220,0.12)' : 'rgba(220,80,120,0.12)';
+    const col  = isMaleIcon ? '#2060cc' : '#cc3070';
+    genderHtml = `<div style="${hasItems ? 'margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #e8d8b0;' : ''}">
+      <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:${bg};border:1px solid ${col};border-radius:20px;font-size:13px;font-weight:700;color:${col};">${icon} ${label}</div>
+    </div>`;
+  }
+
+  // 通常縛りHTML（あれば）
+  let itemsHtml = '';
+  if (hasItems) {
+    if (items.length === 1) {
+      itemsHtml = `<div style="font-size:17px;font-weight:700;color:#333;">${items[0]}</div>`;
+    } else {
+      itemsHtml = items.map((p, i) =>
+        `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;${i < items.length - 1 ? 'border-bottom:1px solid #e8d8b0;' : ''}">
+          <span style="font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;">縛り${i + 1}</span>
+          <span style="font-size:15px;font-weight:700;color:#333;">${p}</span>
+        </div>`
+      ).join('');
+    }
+  }
+
+  const countLabel = hasItems && items.length > 1 ? `（${items.length}件）` : '';
+  return `<div style="margin-top:20px;padding:14px 18px;background:linear-gradient(135deg,#fff8e8,#fff3d4);border:2px solid var(--accent);border-radius:12px;animation:fadeUp .4s ease;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;margin-bottom:8px;">🔒 追加縛り${countLabel}</div>
+    ${genderHtml}${itemsHtml}
+  </div>`;
+}
+
+function previewShibari() {
+  const items = getShibariItems();
+  const listEl = document.getElementById('shibari-preview-list');
+  if (items.length === 0) {
+    listEl.innerHTML = '<span style="color:var(--text-muted);">縛りが未入力です</span>';
+  } else {
+    listEl.innerHTML = items.map((item, i) =>
+      `<div style="padding:3px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text-muted);font-size:11px;margin-right:8px;">${i + 1}</span>${item}
+      </div>`
+    ).join('');
+  }
+  listEl.style.display = listEl.style.display === 'none' ? 'block' : 'none';
+}
+
+// メモ更新時に件数を表示
+document.addEventListener('DOMContentLoaded', () => {
+  const memo = document.getElementById('shibari-memo');
+  if (memo) {
+    memo.addEventListener('input', () => {
+      const count = getShibariItems().length;
+      document.getElementById('shibari-count').textContent = `${count} 件登録中`;
+      // プレビューが開いていれば更新
+      const listEl = document.getElementById('shibari-preview-list');
+      if (listEl.style.display !== 'none') previewShibari();
+    });
+  }
+});
+
 // ランク文字列 → 数値変換（4/5 も A/S も対応）
 function parseRankStr(s) {
   if (!s) return null;
   const u = s.toUpperCase();
-  if (u === 'S' || s === '5') return 5;
-  if (u === 'A' || s === '4') return 4;
+  // S / 5 / 星5 / ☆5 / ★5
+  if (u === 'S' || s === '5' || s === '星5' || s === '☆5' || s === '★5') return 5;
+  // A / 4 / 星4 / ☆4 / ★4
+  if (u === 'A' || s === '4' || s === '星4' || s === '☆4' || s === '★4') return 4;
   return null;
 }
 
-// ─── ファイル名解析（新形式: 名前_タイプ_ランク　旧形式も維持）───
+function parseTotsukiStr(s) {
+  if (!s && s !== 0) return null;
+  const str = String(s).trim();
+  // 0〜7の数字
+  if (/^[0-7]$/.test(str)) return parseInt(str);
+  // 無凸〜完凸の文字
+  const map = { '無凸': 0, '1凸': 1, '2凸': 2, '3凸': 3, '4凸': 4, '5凸': 5, '完凸': 6 };
+  if (map[str] !== undefined) return map[str];
+  return null;
+}
+
+// ─── ファイル名解析（新形式: 名前_タイプ_ランク_性別_凸　旧形式も維持）───
+function parseGenderStr(s) {
+  if (!s) return null;
+  const v = s;
+  if (['♀','f','female','女','女性','メス','雌'].includes(v)) return 'female';
+  if (['♂','m','male','男','男性','オス','雄'].includes(v)) return 'male';
+  const vl = s.toLowerCase();
+  if (['f','female','メス','雌'].includes(vl)) return 'female';
+  if (['m','male','オス','雄'].includes(vl)) return 'male';
+  return null;
+}
+
 function parseFilename(filename) {
   // 拡張子除去
   const base = filename.replace(/\.[^/.]+$/, "");
 
-  // 新形式: 〇〇_△△_□□ （アンダースコア区切り3パーツ）
-  // 例: ちぃちゃん_気体_5　ちぃちゃん_ソリッド_4
+  // 形式: キャラ名_タイプ_ランク_性別_凸（各パーツ省略可）
   const parts = base.split('_');
-  if (parts.length >= 3) {
-    const namePart = parts.slice(0, parts.length - 2).join('_');
-    const attrPart = parts[parts.length - 2];
-    const rankPart = parts[parts.length - 1];
-    const validAttr = ATTRS.includes(attrPart) ? attrPart : null;
-    const validRank = parseRankStr(rankPart);
-    if (validAttr) {
-      return { name: namePart.trim() || "無名画像", attr: validAttr, rank: validRank };
-    }
-  }
-  // 新形式: 〇〇_△△ （ランクなし2パーツ）
-  if (parts.length >= 2) {
-    const namePart = parts.slice(0, parts.length - 1).join('_');
-    const attrPart = parts[parts.length - 1];
-    const validAttr = ATTRS.includes(attrPart) ? attrPart : null;
-    if (validAttr) {
-      return { name: namePart.trim() || "無名画像", attr: validAttr, rank: null };
-    }
+
+  // タイプが含まれるインデックスを探す
+  let attrIdx = -1;
+  for (let i = 0; i < parts.length; i++) {
+    if (ATTRS.includes(parts[i])) { attrIdx = i; break; }
   }
 
-  // 旧形式フォールバック（タイプ名がどこかに含まれる・（星N）形式）
+  if (attrIdx !== -1) {
+    const namePart   = parts.slice(0, attrIdx).join('_') || "無名画像";
+    const remaining  = parts.slice(attrIdx + 1); // タイプ以降のパーツ
+    let rank = null, gender = null, totsuki_max = null;
+
+    // remaining を順番に解析（ランク→性別→凸 の順で試みる）
+    const used = new Array(remaining.length).fill(false);
+    for (let i = 0; i < remaining.length; i++) {
+      if (!used[i] && rank === null) {
+        const r = parseRankStr(remaining[i]);
+        if (r !== null) { rank = r; used[i] = true; continue; }
+      }
+      if (!used[i] && gender === null) {
+        const g = parseGenderStr(remaining[i]);
+        if (g !== null) { gender = g; used[i] = true; continue; }
+      }
+      if (!used[i] && totsuki_max === null) {
+        const t = parseTotsukiStr(remaining[i]);
+        if (t !== null) { totsuki_max = t; used[i] = true; }
+      }
+    }
+    return { name: namePart.trim(), attr: parts[attrIdx], rank, gender, totsuki_max };
+  }
+
+  // 旧形式フォールバック
   let name = base;
   let attr = null;
   let rank = null;
@@ -940,16 +1542,17 @@ function parseFilename(filename) {
   }
   const m = name.match(/[（(]星(\d)[）)]/);
   if (m) { rank = parseInt(m[1]); name = name.replace(m[0], ''); }
-  // _A _S 形式
   const ms = name.match(/[_\-]([AaSs])$/);
   if (ms && !rank) { rank = parseRankStr(ms[1]); name = name.replace(ms[0], ''); }
   name = name.replace(/^[_\-\s]+|[_\-\s]+$/g, '').trim() || "無名画像";
-  return { name, attr, rank };
+  return { name, attr, rank, gender: null, totsuki_max: null };
 }
 
-function detectAttr(filename) { return parseFilename(filename).attr; }
-function detectRank(filename)  { return parseFilename(filename).rank; }
-function cleanName(filename)   { return parseFilename(filename).name; }
+function detectAttr(filename)      { return parseFilename(filename).attr; }
+function detectRank(filename)      { return parseFilename(filename).rank; }
+function detectGender(filename)    { return parseFilename(filename).gender; }
+function detectTotsuki(filename)   { return parseFilename(filename).totsuki_max; }
+function cleanName(filename)       { return parseFilename(filename).name; }
 
 // ─── ドロップゾーン ───
 const dropZone = document.getElementById('drop-zone');
@@ -970,7 +1573,7 @@ dropZone.addEventListener('touchstart', () => { dropZone.style.borderColor = 'va
 dropZone.addEventListener('touchend',   () => { dropZone.style.borderColor = 'var(--border)'; }, { passive: true });
 
 // ─── モーダル登録フロー ───
-let registerQueue = [];  // { src, defaultName, defaultAttr, defaultRank }
+let registerQueue = [];  // { src, defaultName, defaultAttr, defaultRank, defaultGender, defaultTotsukiMax }
 let registerIndex = 0;
 
 function handleFiles(files) {
@@ -987,7 +1590,9 @@ function handleFiles(files) {
         src: ev.target.result,
         defaultName: cleanName(file.name),
         defaultAttr: detectAttr(file.name) || '',
-        defaultRank: detectRank(file.name) || ''
+        defaultRank: detectRank(file.name) || '',
+        defaultGender: detectGender(file.name) || null,
+        defaultTotsukiMax: detectTotsuki(file.name) ?? null
       });
       loaded++;
       if (loaded === fileArr.length) {
@@ -1015,6 +1620,8 @@ function openRegisterModal() {
   document.getElementById('modal-name').value = item.defaultName;
   document.getElementById('modal-attr').value = item.defaultAttr;
   document.getElementById('modal-rank').value = String(item.defaultRank);
+  document.getElementById('modal-gender').value = item.defaultGender || '';
+  document.getElementById('modal-totsuki-max').value = item.defaultTotsukiMax != null ? String(item.defaultTotsukiMax) : '';
   document.getElementById('modal-counter').textContent =
     registerQueue.length > 1 ? `${registerIndex + 1} / ${registerQueue.length}` : '';
 
@@ -1041,13 +1648,20 @@ function confirmRegister() {
 
   const rank = document.getElementById('modal-rank').value
     ? parseInt(document.getElementById('modal-rank').value) : null;
+  const gender = document.getElementById('modal-gender').value || null;
+  const tMaxRaw = document.getElementById('modal-totsuki-max').value;
+  const totsuki_max = tMaxRaw !== '' ? parseInt(tMaxRaw) : null;
+  const totsuki_min = 0;
+  const totsuki_vals = totsuki_max != null
+    ? Array.from({ length: totsuki_max + 1 }, (_, i) => i)
+    : null;
   const src = registerQueue[registerIndex].src;
 
   const existing = allImages.findIndex(img => img.name === name);
   if (existing !== -1) {
-    allImages[existing] = { src, name, attr, rank };
+    allImages[existing] = { src, name, attr, rank, gender, totsuki_min, totsuki_max, totsuki_vals };
   } else {
-    allImages.push({ src, name, attr, rank });
+    allImages.push({ src, name, attr, rank, gender, totsuki_min, totsuki_max, totsuki_vals });
   }
 
   registerIndex++;
@@ -1071,7 +1685,185 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ─── IndexedDB 永続保存 ───
+// ─── 凸ランダム ───
+const TOTSUKI_LABELS = ['無凸','1凸','2凸','3凸','4凸','5凸','完凸'];
+
+function handleTotsukiToggle() {
+  const on = document.getElementById('totsuki-mode').checked;
+  document.getElementById('totsuki-status').textContent = on ? 'ON' : 'OFF';
+  document.getElementById('totsuki-status').style.color = on ? 'var(--accent)' : 'var(--text-muted)';
+  document.getElementById('totsuki-options').style.display = on ? 'block' : 'none';
+  handleTotsukiTypeChange();
+}
+
+function handleTotsukiTypeChange() {
+  const on = document.getElementById('totsuki-mode').checked;
+  const type = document.querySelector('input[name="totsuki-type"]:checked')?.value;
+  const isPreset = on && type === 'preset';
+  const isRange  = on && type === 'range';
+  document.getElementById('totsuki-range-ui') && (document.getElementById('totsuki-range-ui').style.display = isRange ? 'block' : 'none');
+  document.querySelectorAll('.totsuki-setting').forEach(el => {
+    el.style.display = isPreset ? 'block' : 'none';
+  });
+}
+
+function saveTotsukiSetting(name, key, value) {
+  const img = allImages.find(img => img.name === name);
+  if (!img) return;
+  if (key === 'min') img.totsuki_min = value !== '' ? Number(value) : null;
+  if (key === 'max') img.totsuki_max = value !== '' ? Number(value) : null;
+  saveImagesToStorage();
+}
+
+// ─── 編集モーダル ───
+let editTargetName = null;
+
+function openEditModal(name) {
+  const img = allImages.find(i => i.name === name);
+  if (!img) return;
+  editTargetName = name;
+
+  // プレビュー
+  const wrap = document.getElementById('edit-preview-wrap');
+  if (img.src) {
+    wrap.innerHTML = `<img class="modal-preview" src="${img.src}" alt="プレビュー">`;
+  } else {
+    wrap.innerHTML = `<div class="modal-preview-none"><span style="font-size:32px;opacity:0.25;">👤</span><span style="font-size:12px;color:var(--text-muted);">画像なし</span></div>`;
+  }
+
+  document.getElementById('edit-name').value = img.name;
+  document.getElementById('edit-attr').value = img.attr || '';
+  document.getElementById('edit-rank').value = img.rank ? String(img.rank) : '';
+
+  // 凸設定（最大値）
+  const tMax = img.totsuki_max != null ? String(img.totsuki_max)
+    : (img.totsuki_vals?.length ? String(Math.max(...img.totsuki_vals)) : '');
+  document.getElementById('edit-gender').value = img.gender || '';
+  document.getElementById('edit-totsuki-max').value = tMax;
+
+  document.getElementById('edit-overlay').classList.add('active');
+  setTimeout(() => document.getElementById('edit-name').focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-overlay').classList.remove('active');
+  editTargetName = null;
+}
+
+
+
+function saveEditModal() {
+  const newName = document.getElementById('edit-name').value.trim();
+  const newAttr = document.getElementById('edit-attr').value;
+
+  if (!newName) {
+    document.getElementById('edit-name').style.borderColor = '#c44';
+    document.getElementById('edit-name').focus();
+    return;
+  }
+  if (!newAttr) {
+    document.getElementById('edit-attr').style.borderColor = '#c44';
+    return;
+  }
+  document.getElementById('edit-name').style.borderColor = '';
+  document.getElementById('edit-attr').style.borderColor = '';
+
+  const newRank = document.getElementById('edit-rank').value ? parseInt(document.getElementById('edit-rank').value) : null;
+  const newGender = document.getElementById('edit-gender').value || null;
+  const tMaxRaw = document.getElementById('edit-totsuki-max').value;
+  const totsuki_max = tMaxRaw !== '' ? parseInt(tMaxRaw) : null;
+  const totsuki_min = 0; // 常に無凸から
+  const totsuki_vals = totsuki_max != null
+    ? Array.from({ length: totsuki_max + 1 }, (_, i) => i)
+    : null;
+
+  const idx = allImages.findIndex(i => i.name === editTargetName);
+  if (idx === -1) { closeEditModal(); return; }
+
+  // 名前変更時の各セットも更新
+  if (newName !== editTargetName) {
+    if (allImages.some((img, i) => img.name === newName && i !== idx)) {
+      alert('同じ名前のキャラがすでに存在します。');
+      return;
+    }
+    if (disabledImages.has(editTargetName)) { disabledImages.delete(editTargetName); disabledImages.add(newName); }
+    if (tempExcludedImages.has(editTargetName)) { tempExcludedImages.delete(editTargetName); tempExcludedImages.add(newName); }
+    if (tankiLastPick === editTargetName) tankiLastPick = newName;
+  }
+
+  allImages[idx] = { ...allImages[idx], name: newName, attr: newAttr, rank: newRank, gender: newGender, totsuki_min, totsuki_max, totsuki_vals };
+  saveImagesToStorage();
+  renderUploaded();
+  closeEditModal();
+}
+
+function getTotsuki(img) {
+  const on = document.getElementById('totsuki-mode').checked;
+  if (!on) return null;
+  const type = document.querySelector('input[name="totsuki-type"]:checked')?.value;
+
+  // キャラ別に設定された上限（設定なければ6）
+  const charMax = img.totsuki_max ?? 6;
+
+  if (type === 'preset') {
+    // totsuki_min〜totsuki_maxの範囲からランダム
+    const min = img.totsuki_min ?? 0;
+    const max = img.totsuki_max ?? null;
+    if (max != null) {
+      const lo = Math.min(min, max);
+      const hi = Math.max(min, max);
+      return lo + Math.floor(Math.random() * (hi - lo + 1));
+    }
+    // 未設定なら0〜charMax（キャラ別上限を超えない）
+    return Math.floor(Math.random() * (charMax + 1));
+  }
+
+  if (type === 'range') {
+    // グローバル範囲指定：チェックされた凸番号のうちキャラ別上限以下のものからランダム
+    const checked = [...document.querySelectorAll('input[name="global-totsuki-val"]:checked')]
+      .map(el => parseInt(el.value))
+      .filter(v => v <= charMax);
+    if (checked.length === 0) return Math.floor(Math.random() * (charMax + 1));
+    return checked[Math.floor(Math.random() * checked.length)];
+  }
+
+  // 完全ランダム：キャラ別上限を超えない
+  return Math.floor(Math.random() * (charMax + 1));
+}
+
+function globalTotsukiSelectAll() {
+  document.querySelectorAll('input[name="global-totsuki-val"]').forEach(el => el.checked = true);
+}
+function globalTotsukiDeselectAll() {
+  document.querySelectorAll('input[name="global-totsuki-val"]').forEach(el => el.checked = false);
+}
+
+function totsukiLabel(n) {
+  return n === null ? '' : TOTSUKI_LABELS[n] ?? `${n}凸`;
+}
+
+// 凸数に応じてスキルをランダム抽出して表示テキストを返す
+function totsukiSkillLabel(n) {
+  if (n === null) return null;
+  if (n === 0) return '無凸';
+  const skillOn = document.getElementById('skill-random-mode')?.checked ?? false;
+  if (!skillOn) return totsukiLabel(n);
+  const allSkills = [1, 2, 3, 4, 5, 6];
+  const shuffled = [...allSkills].sort(() => Math.random() - 0.5);
+  const picked = shuffled.slice(0, n).sort((a, b) => a - b);
+  return `${totsukiLabel(n)}　スキル${picked.join('・')}を使用`;
+}
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'skill-random-mode') {
+    const on = e.target.checked;
+    const status = document.getElementById('skill-random-status');
+    status.textContent = on ? 'ON' : 'OFF';
+    status.style.color = on ? 'var(--accent)' : 'var(--text-muted)';
+  }
+});
+
+
 const DB_NAME = 'NTERoulette';
 const DB_VERSION = 1;
 const STORE_NAME = 'images';
@@ -1099,7 +1891,7 @@ async function saveImagesToStorage() {
     const store = tx.objectStore(STORE_NAME);
     // 全件クリアして書き直し
     store.clear();
-    allImages.forEach(img => store.put({ name: img.name, attr: img.attr, rank: img.rank ?? null, src: img.src }));
+    allImages.forEach(img => store.put({ name: img.name, attr: img.attr, rank: img.rank ?? null, src: img.src, gender: img.gender ?? null, totsuki_min: img.totsuki_min ?? null, totsuki_max: img.totsuki_max ?? null, totsuki_vals: img.totsuki_vals ?? null }));
   } catch(e) {
     console.warn('画像の保存に失敗しました:', e);
   }
@@ -1117,7 +1909,7 @@ async function loadImagesFromStorage() {
       allImages = records.map(m => {
         const cleanedName = cleanName(m.name + '.dummy');
         const rank = m.rank ?? detectRank(m.name);
-        return { name: cleanedName, attr: m.attr, rank, src: m.src };
+        return { name: cleanedName, attr: m.attr, rank, src: m.src, gender: m.gender ?? null, totsuki_min: m.totsuki_min ?? null, totsuki_max: m.totsuki_max ?? null, totsuki_vals: m.totsuki_vals ?? null };
       });
       renderUploaded();
     };
@@ -1138,6 +1930,38 @@ function toggleImageEnabled(name, checkbox) {
   }
   renderUploaded();
 }
+
+function addManualCharacter() {
+  const nameEl = document.getElementById('manual-name');
+  const attrEl = document.getElementById('manual-attr');
+  const rankEl = document.getElementById('manual-rank');
+  const genderEl = document.getElementById('manual-gender');
+  const totsukiEl = document.getElementById('manual-totsuki-max');
+  const name = nameEl.value.trim();
+  const attr = attrEl.value;
+  const rank = rankEl.value ? Number(rankEl.value) : null;
+  const gender = genderEl.value || null;
+  const totsuki_max = totsukiEl.value !== '' ? parseInt(totsukiEl.value) : null;
+  const totsuki_min = 0;
+  const totsuki_vals = totsuki_max != null
+    ? Array.from({ length: totsuki_max + 1 }, (_, i) => i)
+    : null;
+  if (!name) { nameEl.focus(); return; }
+  if (!attr) { alert('タイプを選択してください。'); attrEl.focus(); return; }
+  if (allImages.some(img => img.name === name)) {
+    alert('同じ名前のキャラがすでに存在します。');
+    return;
+  }
+  allImages.push({ src: '', name, attr, rank, gender, totsuki_min, totsuki_max, totsuki_vals });
+  saveImagesToStorage();
+  renderUploaded();
+  nameEl.value = '';
+  attrEl.value = '';
+  rankEl.value = '';
+  genderEl.value = '';
+  totsukiEl.value = '';
+}
+
 
 function deleteImage(name) {
   allImages = allImages.filter(img => img.name !== name);
@@ -1164,9 +1988,21 @@ function renderUploaded() {
     if (isDisabled) div.classList.add('img-disabled');
     const safeId = 'toggle_' + CSS.escape(item.name);
     div.innerHTML = `
-      <img src="${item.src}">
+      ${item.src
+        ? `<div class="thumb-img-clickable" onclick="openEditModal('${item.name.replace(/'/g,"\\'")}')" title="クリックして編集">
+             <img src="${item.src}">
+             <span style="position:absolute;bottom:4px;right:4px;background:rgba(255,255,255,0.85);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;pointer-events:none;">✏️</span>
+           </div>`
+        : `<div class="thumb-img-clickable" onclick="openEditModal('${item.name.replace(/'/g,"\\'")}')" title="クリックして編集" style="width:100%;height:100px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer;">
+             <span style="font-size:28px;opacity:0.3;">👤</span>
+             <span style="font-size:9px;color:var(--text-muted);">画像なし</span>
+             <span style="font-size:9px;color:#5a8fd4;">✏️ タップして編集</span>
+           </div>`
+      }
       ${item.attr ? `<span class="attr-badge" style="background:${col};color:${tc};">${item.attr}</span>` : ''}
       ${item.rank ? `<span class="rank-badge rank-${item.rank}">${item.rank === 5 ? "S" : item.rank === 4 ? "A" : item.rank}</span>` : ''}
+      ${item.gender === 'male' ? `<span style="position:absolute;top:22px;right:0;background:rgba(60,120,220,0.85);color:#fff;font-size:9px;padding:2px 5px;border-radius:0 0 0 6px;font-weight:700;">♂</span>` : item.gender === 'female' ? `<span style="position:absolute;top:22px;right:0;background:rgba(220,80,120,0.85);color:#fff;font-size:9px;padding:2px 5px;border-radius:0 0 0 6px;font-weight:700;">♀</span>` : ''}
+      ${(()=>{ const max = item.totsuki_max; if(max==null) return ''; const minLbl = n => n===0?'無凸':n===6?'完凸':n+'凸'; const lbl = max===0?'無凸（固定）':'〜'+minLbl(max); return `<span style="position:absolute;bottom:0;left:0;background:rgba(0,0,0,0.65);color:#fff;font-size:9px;padding:2px 6px;border-radius:0 6px 0 0;font-weight:700;letter-spacing:0.03em;">${lbl}</span>`; })()}
       <div class="name">${item.name}</div>
       <div class="thumb-controls">
         <span class="thumb-toggle-label">${isDisabled ? 'OFF' : 'ON'}</span>
@@ -1174,7 +2010,20 @@ function renderUploaded() {
           <input type="checkbox" id="${safeId}" ${isDisabled ? '' : 'checked'} onchange="toggleImageEnabled('${item.name.replace(/'/g,"\\'")}', this)">
           <span class="thumb-toggle-slider"></span>
         </label>
-      <button class="btn" style="margin-top:6px;width:100%;font-size:12px;" onclick="deleteImageByName('${item.name.replace(/'/g,"\\'")}')">🗑 削除</button></div>`;
+      <button class="btn" style="margin-top:6px;width:100%;font-size:12px;" onclick="deleteImageByName('${item.name.replace(/'/g,"\\'")}')">🗑 削除</button>
+      <div id="totsuki-setting-${CSS.escape(item.name)}" class="totsuki-setting" style="display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
+        <p style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">凸範囲設定 <button onclick="openEditModal('${item.name.replace(/'/g,"\\'")}');event.stopPropagation();" style="font-size:9px;padding:1px 6px;border-radius:4px;border:1px solid #5a8fd4;background:#fff;color:#5a8fd4;cursor:pointer;margin-left:4px;">✏️ 詳細編集</button></p>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;">
+          <select onchange="saveTotsukiSetting('${item.name.replace(/'/g,"\\'")}', 'min', this.value)" style="flex:1;padding:3px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;">
+            ${[0,1,2,3,4,5,6].map(n => `<option value="${n}" ${(item.totsuki_min??0)===n?'selected':''}>${n===0?'無凸':n===6?'完凸':n+'凸'}</option>`).join('')}
+          </select>
+          <span style="color:var(--text-muted);">〜</span>
+          <select onchange="saveTotsukiSetting('${item.name.replace(/'/g,"\\'")}', 'max', this.value)" style="flex:1;padding:3px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;">
+            <option value="" ${item.totsuki_max==null?'selected':''}>未設定</option>
+            ${[0,1,2,3,4,5,6].map(n => `<option value="${n}" ${item.totsuki_max===n?'selected':''}>${n===0?'無凸':n===6?'完凸':n+'凸'}</option>`).join('')}
+          </select>
+        </div>
+      </div></div>`;
     container.appendChild(div);
   });
 }
@@ -1243,9 +2092,16 @@ function addTextCandidate() {
 }
 
 function getCategory(name) {
-  if (name.includes("星5")) return "star5";
-  if (name.includes("星4")) return "star4";
+  if (name.includes("星5") || name.includes("★5") || name.includes("☆5")) return "star5";
+  if (name.includes("星4") || name.includes("★4") || name.includes("☆4")) return "star4";
   return "normal";
+}
+
+function getRankCategory(img) {
+  if (img.rank === 5) return "star5";
+  if (img.rank === 4) return "star4";
+  // フォールバック：nameに含まれる場合
+  return getCategory(img.name);
 }
 
 // ─── モード切り替え ───
@@ -1273,7 +2129,7 @@ function handleModeChange() {
 }
 
 // ─── 有効候補を計算するヘルパー ───
-function calcGroups(excludeTexts, excludeImages, filterType) {
+function calcGroups(excludeTexts, excludeImages, filterType, genderFilter = null) {
   // 弧盤オフ時はチェック済みテキストを空配列にする
   const kobanOn = isKobanEnabled();
   const checkedTexts = kobanOn
@@ -1282,8 +2138,10 @@ function calcGroups(excludeTexts, excludeImages, filterType) {
 
   let availableImages = allImages.filter(img => !excludeImages.has(img.name) && !disabledImages.has(img.name));
   if (filterType !== "all") {
-    availableImages = availableImages.filter(img => getCategory(img.name) === filterType);
+    availableImages = availableImages.filter(img => getRankCategory(img) === filterType);
   }
+  // 性別フィルタ（縛り設定による）
+  availableImages = applyGenderFilter(availableImages, genderFilter);
 
   const attrImages = availableImages.filter(img => img.attr && ATTRS.includes(img.attr));
 
@@ -1302,14 +2160,18 @@ function randomExtract() {
   const filterType    = document.querySelector('input[name="filter"]:checked').value;
   const kobanOn       = isKobanEnabled();
 
-  let { checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType);
+  // 追加縛りを先に解決（性別フィルタをプール生成に反映）
+  const shibariResult = pickShibariItems();
+  const { genderFilter } = shibariResult;
+
+  let { checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType, genderFilter);
 
   // 弧盤オフ時は画像のみ抽出モード
   if (!kobanOn) {
     if (availableImages.length === 0) {
       if (isExcludeMode && tempExcludedImages.size > 0) {
         tempExcludedImages.clear();
-        ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType));
+        ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType, genderFilter));
         renderUploaded();
       }
       if (availableImages.length === 0) return alert('画像をアップロードしてください。');
@@ -1359,7 +2221,7 @@ function randomExtract() {
       renderUploaded();
     }
 
-    showResultImagesOnly(pickedImages);
+    showResultImagesOnly(pickedImages, shibariResult);
     return;
   }
 
@@ -1374,7 +2236,7 @@ function randomExtract() {
   if (isExcludeMode && eligibleAttrs.length === 0) {
     tempExcludedTexts.clear();
     tempExcludedImages.clear();
-    ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType));
+    ({ checkedTexts, availableImages, groups } = calcGroups(tempExcludedTexts, tempExcludedImages, filterType, genderFilter));
     eligibleAttrs = ATTRS.filter(a => groups[a].texts.length > 0 && groups[a].images.length > 0);
     renderUploaded();
     renderTextList();
@@ -1495,11 +2357,11 @@ function randomExtract() {
 
   renderUploaded();
   renderTextList();
-  showResult(pickedPairs, pickedTextOnly, pickedImageOnly, extractMode);
+  showResult(pickedPairs, pickedTextOnly, pickedImageOnly, extractMode, shibariResult);
 }
 
 // 弧盤オフ時の画像のみ結果表示
-function showResultImagesOnly(images) {
+function showResultImagesOnly(images, shibariResult = null) {
   const resultEl = document.getElementById('result');
 
   const zenPicked  = images.filter(img => img.half === '前半');
@@ -1524,93 +2386,130 @@ function showResultImagesOnly(images) {
     </div>`;
   }
 
-  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">（弧盤なし・画像のみ）</span></h2>${summaryHtml}`;
+  const resolvedShibariIO = shibariResult ?? pickShibariItems();
+  const hasGenderFilterIO = !!resolvedShibariIO.genderFilter;
+  const shibariPickIO = buildShibariHtml(resolvedShibariIO);
 
-  const renderImageCards = (list) => `<div class="pair-grid">` + list.map(img => {
-    const col = img.attr ? attrColor(img.attr) : 'var(--border)';
-    const tc  = img.attr ? attrTextColor(img.attr) : '#fff';
-    return `<div class="pair-card">
-        ${img.attr ? `<div class="pair-attr" style="background:${col};color:${tc};"><span>${img.attr}</span></div>` : ''}
-        <img src="${img.src}" alt="${img.name}">
-        <div class="pair-body"><div class="pair-img-name">🖼 ${img.name}</div></div>
-      </div>`;
-  }).join('') + `</div>`;
+  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">（弧盤なし・画像のみ）</span></h2>`;
 
-  if (normPicked.length > 0) html += renderImageCards(normPicked);
-  if (zenPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p>` + renderImageCards(zenPicked);
-  if (kouPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p>` + renderImageCards(kouPicked);
+  if (!hasGenderFilterIO) {
+    html += summaryHtml;
 
+    const renderImageCards = (list) => `<div class="pair-grid">` + list.map(img => {
+      const col = img.attr ? attrColor(img.attr) : 'var(--border)';
+      const tc  = img.attr ? attrTextColor(img.attr) : '#fff';
+      const totsuki = getTotsuki(img);
+      const totsukiText = totsukiSkillLabel(totsuki);
+      return `<div class="pair-card">
+          ${img.attr ? `<div class="pair-attr" style="background:${col};color:${tc};"><span>${img.attr}</span></div>` : ''}
+          <img src="${img.src}" alt="${img.name}">
+          <div class="pair-body">
+            <div class="pair-img-name">🖼 ${img.name}</div>
+            ${totsukiText ? `<div style="font-size:13px;font-weight:700;color:var(--accent);margin-top:4px;">🎯 ${totsukiText}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('') + `</div>`;
+
+    if (normPicked.length > 0) html += renderImageCards(normPicked);
+    if (zenPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p>` + renderImageCards(zenPicked);
+    if (kouPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p>` + renderImageCards(kouPicked);
+  }
+
+  if (shibariPickIO) html += shibariPickIO;
+  html += bottomButtonsHtml();
   resultEl.innerHTML = html;
 }
 
-function showResult(pairs, textOnly, imageOnly, mode) {
+function showResult(pairs, textOnly, imageOnly, mode, shibariResult = null) {
   const resultEl = document.getElementById('result');
 
   const zenpairs  = pairs.filter(p => p.half === '前半');
   const kopairs   = pairs.filter(p => p.half === '後半');
   const normPairs = pairs.filter(p => p.half === null);
   const total = pairs.length + textOnly.length + imageOnly.length;
+  // キャラ（画像あり）のみ人数カウント。弧盤テキストのみはカウントしない
+  const charCount = pairs.filter(p => p.image).length + imageOnly.length;
 
   // サマリーボックス
   let summaryHtml = '';
   if (total > 0) {
-    if (normPairs.length > 0 || textOnly.length > 0 || imageOnly.length > 0) {
+    if (normPairs.length > 0 || imageOnly.length > 0) {
       const allNames = [
-        ...normPairs.map(p => p.image ? p.image.name : (p.text ? p.text.name : '')),
-        ...textOnly.map(t => t.name),
+        ...normPairs.filter(p => p.image).map(p => p.image.name),
         ...imageOnly.map(img => img.name)
       ].filter(Boolean).map(n => `<span style="font-weight:700;color:#111;">${n}</span>`).join('、');
-      summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
-        抽出人数：<strong>${total}人</strong>　${allNames}
-      </div>`;
+      if (allNames) {
+        summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+          抽出人数：<strong>${charCount}人</strong>　${allNames}
+        </div>`;
+      }
     }
     if (zenpairs.length > 0 || kopairs.length > 0) {
-      const zenNames = zenpairs.map(p => `<span style="font-weight:700;color:#111;">${p.image ? p.image.name : p.text?.name ?? ''}</span>`).join('、');
-      const kouNames = kopairs.map(p => `<span style="font-weight:700;color:#111;">${p.image ? p.image.name : p.text?.name ?? ''}</span>`).join('、');
+      const zenCharCount = zenpairs.filter(p => p.image).length;
+      const kouCharCount = kopairs.filter(p => p.image).length;
+      const zenNames = zenpairs.filter(p => p.image).map(p => `<span style="font-weight:700;color:#111;">${p.image.name}</span>`).join('、');
+      const kouNames = kopairs.filter(p => p.image).map(p => `<span style="font-weight:700;color:#111;">${p.image.name}</span>`).join('、');
       summaryHtml += `<div style="background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.8;">
-        ${zenpairs.length > 0 ? `<div>【前半】<strong>${zenpairs.length}人</strong>　${zenNames}</div>` : ''}
-        ${kopairs.length > 0  ? `<div>【後半】<strong>${kopairs.length}人</strong>　${kouNames}</div>` : ''}
-        <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">合計 <strong>${zenpairs.length + kopairs.length}人</strong></div>
+        ${zenpairs.length > 0 ? `<div>【前半】<strong>${zenCharCount}人</strong>　${zenNames}</div>` : ''}
+        ${kopairs.length > 0  ? `<div>【後半】<strong>${kouCharCount}人</strong>　${kouNames}</div>` : ''}
+        <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">合計 <strong>${zenCharCount + kouCharCount}人</strong></div>
       </div>`;
     }
   }
 
   const modeLabel = mode === 'yonin' ? '（4人編成）' : '';
-  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">${modeLabel}</span></h2>${summaryHtml}`;
 
-  if (pairs.length > 0) {
-    const renderPairCards = (list) => list.map(p => {
-      const col = attrColor(p.attr);
-      const tc  = attrTextColor(p.attr);
-      return `
-        <div class="pair-card">
-          <div class="pair-attr" style="background:${col};color:${tc};"><span>${p.attr}</span></div>
-          ${p.image && p.image.src ? `<img src="${p.image.src}" alt="${p.image.name}">` : `<div class="no-image">画像なし</div>`}
-          <div class="pair-body">
-            ${p.image && p.image.src ? `<div class="pair-img-name">🖼 ${p.image.name}</div>` : ''}
-            ${p.text  ? `<div class="pair-text-name">📝 ${p.text.name}</div>` : ''}
-          </div>
-        </div>`;
-    }).join('');
+  // 性別縛りが含まれる場合はキャラ情報を出さない
+  const resolvedShibari = shibariResult ?? pickShibariItems();
+  const hasGenderFilter = !!resolvedShibari.genderFilter;
+  const shibariPick = buildShibariHtml(resolvedShibari);
 
-    if (normPairs.length > 0) html += `<div class="pair-grid">${renderPairCards(normPairs)}</div>`;
-    if (zenpairs.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p><div class="pair-grid">${renderPairCards(zenpairs)}</div>`;
-    if (kopairs.length > 0)   html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p><div class="pair-grid">${renderPairCards(kopairs)}</div>`;
+  let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">${modeLabel}</span></h2>`;
+
+  if (!hasGenderFilter) {
+    html += summaryHtml;
+
+    if (pairs.length > 0) {
+      const renderPairCards = (list) => list.map(p => {
+        const col = attrColor(p.attr);
+        const tc  = attrTextColor(p.attr);
+        const totsuki = p.image ? getTotsuki(p.image) : null;
+        const totsukiText = totsukiSkillLabel(totsuki);
+        return `
+          <div class="pair-card">
+            <div class="pair-attr" style="background:${col};color:${tc};"><span>${p.attr}</span></div>
+            ${p.image && p.image.src
+              ? `<img src="${p.image.src}" alt="${p.image.name}">`
+              : `<div class="no-image" style="flex-direction:column;gap:6px;">
+                   <span style="font-size:36px;opacity:0.25;">👤</span>
+                   <span style="font-size:12px;color:var(--text-muted);">${p.image ? p.image.name : '画像なし'}</span>
+                 </div>`}
+            <div class="pair-body">
+              ${p.image && p.image.src ? `<div class="pair-img-name">🖼 ${p.image.name}</div>` : ''}
+              ${totsukiText ? `<div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;">🎯 ${totsukiText}</div>` : ''}
+              ${p.text  ? `<div class="pair-text-name">📝 ${p.text.name}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      if (normPairs.length > 0) html += `<div class="pair-grid">${renderPairCards(normPairs)}</div>`;
+      if (zenpairs.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p><div class="pair-grid">${renderPairCards(zenpairs)}</div>`;
+      if (kopairs.length > 0)   html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p><div class="pair-grid">${renderPairCards(kopairs)}</div>`;
+    }
+
+    if (imageOnly.length > 0) {
+      html += `<div class="solo-section"><h4>🖼 画像のみ（対応テキストなし）</h4><div class="solo-list">` +
+        imageOnly.map(img => `<div class="solo-item">${img.name}<span class="tag tag-${img.attr}">${img.attr}</span></div>`).join('') +
+        `</div></div>`;
+    }
+    if (pairs.length === 0 && imageOnly.length === 0) {
+      html += `<p style="color:var(--text-muted);">条件に合う組み合わせがありませんでした。</p>`;
+    }
   }
 
-  if (textOnly.length > 0) {
-    html += `<div class="solo-section"><h4>📝 テキストのみ（対応画像なし）</h4><div class="solo-list">` +
-      textOnly.map(t => `<div class="solo-item">${t.name}<span class="tag tag-${t.attr}">${t.attr}</span></div>`).join('') +
-      `</div></div>`;
-  }
-  if (imageOnly.length > 0) {
-    html += `<div class="solo-section"><h4>🖼 画像のみ（対応テキストなし）</h4><div class="solo-list">` +
-      imageOnly.map(img => `<div class="solo-item">${img.name}<span class="tag tag-${img.attr}">${img.attr}</span></div>`).join('') +
-      `</div></div>`;
-  }
-  if (pairs.length === 0 && textOnly.length === 0 && imageOnly.length === 0) {
-    html += `<p style="color:var(--text-muted);">条件に合う組み合わせがありませんでした。</p>`;
-  }
+  // 追加縛り
+  if (shibariPick) html += shibariPick;
+  html += bottomButtonsHtml();
 
   resultEl.innerHTML = html;
 }
@@ -1620,10 +2519,15 @@ function extractTanki() {
   const filterType = document.querySelector('input[name="filter"]:checked').value;
   const isExcludeMode = document.getElementById('exclude-mode').checked;
 
+  // 追加縛りを先に解決（性別フィルタをプール生成に反映）
+  const shibariResult = pickShibariItems();
+  const { genderFilter } = shibariResult;
+
   let pool = allImages.filter(img => !disabledImages.has(img.name));
   if (filterType !== 'all') {
-    pool = pool.filter(img => getCategory(img.name) === filterType);
+    pool = pool.filter(img => getRankCategory(img) === filterType);
   }
+  pool = applyGenderFilter(pool, genderFilter);
   if (pool.length === 0) {
     return alert('有効な画像がありません（オフにした画像が多すぎる可能性があります）。');
   }
@@ -1675,19 +2579,31 @@ function extractTanki() {
   const resultEl = document.getElementById(targetId);
   const col = winner.attr ? attrColor(winner.attr) : 'var(--border)';
   const tc  = winner.attr ? attrTextColor(winner.attr) : '#fff';
-  resultEl.innerHTML = `
-    <div style="background:var(--surface2);border:2px solid #5a8fd4;border-radius:12px;overflow:hidden;animation:fadeUp .3s ease;">
-      ${winner.attr ? `<div style="background:${col};color:${tc};padding:6px 14px;font-size:11px;font-weight:700;">${winner.attr}</div>` : ''}
-      <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;">
-        <img src="${winner.src}" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:2px solid var(--border);flex-shrink:0;">
-        <div>
-          <p style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">🗡️ 単騎抽出結果</p>
-          <p style="font-size:18px;font-weight:700;color:#5a8fd4;">${winner.name}</p>
-          ${pickedText ? `<p style="font-size:14px;font-weight:700;color:var(--text);margin-top:6px;">📝 ${pickedText.name}</p>` : ''}
-          <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">全${pool.length}体から抽出</p>
+  const totsuki = getTotsuki(winner);
+  const totsukiText = totsukiSkillLabel(totsuki);
+  const resolvedShibariTanki = shibariResult ?? pickShibariItems();
+  const hasGenderFilterTanki = !!resolvedShibariTanki.genderFilter;
+  const shibariPickTanki = buildShibariHtml(resolvedShibariTanki);
+
+  if (hasGenderFilterTanki) {
+    resultEl.innerHTML = `<h2>✅ 抽出完了</h2>${shibariPickTanki}${bottomButtonsHtml()}`;
+  } else {
+    resultEl.innerHTML = `
+      <div style="background:var(--surface2);border:2px solid #5a8fd4;border-radius:12px;overflow:hidden;animation:fadeUp .3s ease;">
+        ${winner.attr ? `<div style="background:${col};color:${tc};padding:6px 14px;font-size:11px;font-weight:700;">${winner.attr}</div>` : ''}
+        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;">
+          <img src="${winner.src}" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:2px solid var(--border);flex-shrink:0;">
+          <div>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">🗡️ 単騎抽出結果</p>
+            <p style="font-size:18px;font-weight:700;color:#5a8fd4;">${winner.name}</p>
+            ${totsukiText ? `<p style="font-size:15px;font-weight:700;color:var(--accent);margin-top:4px;">🎯 ${totsukiText}</p>` : ''}
+            ${pickedText ? `<p style="font-size:14px;font-weight:700;color:var(--text);margin-top:6px;">📝 ${pickedText.name}</p>` : ''}
+            <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">全${pool.length}体から抽出</p>
+          </div>
         </div>
       </div>
-    </div>`;
+      ${shibariPickTanki}${bottomButtonsHtml()}`;
+  }
 }
 
 
@@ -1754,6 +2670,18 @@ function resetAll() {
   // モード：通常抽出
   document.querySelector('input[name="mode"][value="normal"]').checked = true;
 
+  // 凸トグル：オフ
+  document.getElementById('totsuki-mode').checked = false;
+  document.getElementById('totsuki-status').textContent = 'OFF';
+  document.getElementById('totsuki-status').style.color = 'var(--text-muted)';
+  document.getElementById('totsuki-options').style.display = 'none';
+  document.querySelector('input[name="totsuki-type"][value="random"]').checked = true;
+  handleTotsukiTypeChange();
+  // スキルランダム：オフ
+  const skillToggle = document.getElementById('skill-random-mode');
+  if (skillToggle) { skillToggle.checked = false; document.getElementById('skill-random-status').textContent = 'OFF'; document.getElementById('skill-random-status').style.color = 'var(--text-muted)'; }
+
+
   // 弧盤トグル：ON
   const kobanToggle = document.getElementById('koban-toggle');
   kobanToggle.checked = true;
@@ -1764,6 +2692,13 @@ function resetAll() {
   // 弧盤チェック：全選択
   document.querySelectorAll('.textCandidate').forEach(cb => { cb.checked = true; });
   updateCheckCount();
+
+  // 追加縛り：オフ（メモ内容は保持）
+  const shibariToggle = document.getElementById('shibari-toggle');
+  if (shibariToggle) {
+    shibariToggle.checked = false;
+    handleShibariToggle();
+  }
 
   // モードUI更新
   document.getElementById('tanki-section') && (document.getElementById('tanki-section').style.display = 'none');
