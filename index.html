@@ -757,7 +757,7 @@
     <p>
       <strong>通常抽出</strong>：タイプが一致するキャラと弧盤をランダムに1〜4組抽出します。<br>
       <strong>前半＋後半同時抽出</strong>：前半・後半それぞれにキャラと弧盤を抽出します。編成を前後半で分けたいときに使います。<br>
-      <strong>4人編成</strong>：キャラを4人固定で抽出します。「前半後半に対応する」をオンにすると前半4人・後半4人の計8人が一度に抽出されます。<br>
+      <strong>4人編成</strong>：キャラを4人固定で抽出します。「前半後半に対応する」をオンにすると前半4人・後半4人の計8人が一度に抽出されます。マルチプレイ表示では各プレイヤー分の4人編成をまとめて抽出でき、2人用（1P・2P 各4体 計8体）・3人用（1P〜3P 各4体 計12体）・4人用（1P〜4P 各4体 計16体）から選択可能です。各プレイヤーの結果はカラー枠で区別して表示されます。<br>
       <strong>単騎抽出</strong>：全キャラの中から1体だけ抽出します。弧盤候補がオンの場合、タイプ一致の弧盤も同時に抽出されます。連続で押すと前回と同じキャラが連続して出ないよう除外機能と連動します。
     </p>
 
@@ -929,9 +929,17 @@
   <label for="file-input" style="cursor:pointer;display:block;">
     <strong>ここをタップして画像を選択</strong><br>
     <span style="font-size:13px;line-height:1.8;">
-      📝 <strong>自動認識ファイル名形式：</strong><code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク_性別_凸.jpg</code>（ランク以降は省略可）<br>
-      例：<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_S_女_2凸.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_A.jpg</code>　<code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ナナリ_プラズマ.jpg</code><br>
-      ランク：A/4/星4/☆4/★4・S/5/星5/☆5/★5　性別：女/♀/メス/雌/女性/female・男/♂/オス/雄/男性/male　凸：0〜6の数字 or 無凸〜完凸<br>
+      📝 <strong>自動認識ファイル名形式</strong>（区切りは <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">_</code> またはスペース、ランク以降は省略可）<br>
+      <code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前_タイプ_ランク_性別_凸.jpg</code>　／　<code style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-size:12px;">名前 タイプ ランク 性別 凸.jpg</code><br>
+      <span style="color:#555;font-size:12px;">＿区切り例：</span>
+      <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ちぃちゃん_気体_S_女_2凸.jpg</code>　
+      <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">レクイエム_リキッド_A.jpg</code>　
+      <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">ナナリ_プラズマ.jpg</code><br>
+      <span style="color:#555;font-size:12px;">スペース区切り例：</span>
+      <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;">早霧 気体 S ♀ 無凸.jpg</code><br>
+      ランク：A / 4 / 星4 / ☆4 / ★4 → Aランク　S / 5 / 星5 / ☆5 / ★5 → Sランク<br>
+      性別：女 / ♀ / メス / 雌 / 女性 / female　男 / ♂ / オス / 雄 / 男性 / male<br>
+      凸：0〜6の数字 または 無凸 / 1凸〜6凸 / 完凸<br>
       <span style="color:#aaa;">※ファイル名に関係なく、登録画面で手動入力・修正もできます</span>
     </span>
   </label>
@@ -1132,11 +1140,34 @@
   </div>
 
   <!-- 4人編成オプション（4人編成モード時のみ表示） -->
-  <div id="yonin-options" style="display:none;margin-top:10px;padding:10px 14px;background:var(--surface2);border-radius:8px;font-size:13px;">
+  <div id="yonin-options" style="display:none;margin-top:10px;padding:10px 14px;background:var(--surface2);border-radius:8px;font-size:13px;flex-direction:column;gap:8px;">
     <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-      <input type="checkbox" id="yonin-zenkou" style="accent-color:var(--accent);width:16px;height:16px;">
+      <input type="checkbox" id="yonin-zenkou" style="accent-color:var(--accent);width:16px;height:16px;" onchange="handleYoninZenkouChange()">
       <span>前半後半に対応する（前半4人・後半4人　計8人抽出）</span>
     </label>
+    <div id="yonin-multiplayer-row" style="display:flex;flex-direction:column;gap:6px;padding-top:4px;border-top:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--text-muted);">🎮 マルチプレイ表示</span>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="radio" name="multiplayer-mode" id="yonin-multiplayer-off" value="off" checked style="accent-color:var(--accent);width:15px;height:15px;">
+        <span>なし</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="radio" name="multiplayer-mode" id="yonin-multiplayer-tanki" value="tanki" style="accent-color:var(--accent);width:15px;height:15px;">
+        <span>各自単騎（1P〜4P　1体ずつ）</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="radio" name="multiplayer-mode" id="yonin-multiplayer-party2" value="party2" style="accent-color:var(--accent);width:15px;height:15px;">
+        <span>各自4人編成（1P〜2P　4体ずつ　計8体）</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="radio" name="multiplayer-mode" id="yonin-multiplayer-party3" value="party3" style="accent-color:var(--accent);width:15px;height:15px;">
+        <span>各自4人編成（1P〜3P　4体ずつ　計12体）</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="radio" name="multiplayer-mode" id="yonin-multiplayer-party" value="party" style="accent-color:var(--accent);width:15px;height:15px;">
+        <span>各自4人編成（1P〜4P　4体ずつ　計16体）</span>
+      </label>
+    </div>
   </div>
 
   <!-- 凸ランダム設定 -->
@@ -1466,6 +1497,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function parseRankStr(s) {
   if (!s) return null;
   const u = s.toUpperCase();
+  // 括弧を除去して再チェック（例: （★5）→★5）
+  const stripped = s.replace(/^[（(]+|[）)]+$/g, '').trim();
+  if (stripped !== s) return parseRankStr(stripped);
   // S / 5 / 星5 / ☆5 / ★5
   if (u === 'S' || s === '5' || s === '星5' || s === '☆5' || s === '★5') return 5;
   // A / 4 / 星4 / ☆4 / ★4
@@ -1500,8 +1534,14 @@ function parseFilename(filename) {
   // 拡張子除去
   const base = filename.replace(/\.[^/.]+$/, "");
 
-  // 形式: キャラ名_タイプ_ランク_性別_凸（各パーツ省略可）
-  const parts = base.split('_');
+  // _ とスペース両方を区切りとして扱う（混在も対応）
+  // 括弧付きパターン（例: （星5）（★4））を先にスペースで前後分離してから分割
+  const normalized = base
+    .replace(/([（(][^）)]+[）)])/g, ' $1 ') // 括弧付きを前後スペースで分離
+    .replace(/[ _]+/g, ' ')                  // _ とスペースを統一
+    .trim();
+  const parts = normalized.split(' ').filter(s => s.length > 0);
+  const sep = ' ';
 
   // タイプが含まれるインデックスを探す
   let attrIdx = -1;
@@ -1510,26 +1550,30 @@ function parseFilename(filename) {
   }
 
   if (attrIdx !== -1) {
-    const namePart   = parts.slice(0, attrIdx).join('_') || "無名画像";
-    const remaining  = parts.slice(attrIdx + 1); // タイプ以降のパーツ
     let rank = null, gender = null, totsuki_max = null;
+    const nameParts = [];
 
-    // remaining を順番に解析（ランク→性別→凸 の順で試みる）
-    const used = new Array(remaining.length).fill(false);
-    for (let i = 0; i < remaining.length; i++) {
-      if (!used[i] && rank === null) {
-        const r = parseRankStr(remaining[i]);
-        if (r !== null) { rank = r; used[i] = true; continue; }
+    // 全パーツをスキャン：タイプ以外のパーツをランク/性別/凸/名前に振り分け
+    for (let i = 0; i < parts.length; i++) {
+      if (i === attrIdx) continue; // タイプはスキップ
+      const p = parts[i];
+      if (rank === null) {
+        const r = parseRankStr(p);
+        if (r !== null) { rank = r; continue; }
       }
-      if (!used[i] && gender === null) {
-        const g = parseGenderStr(remaining[i]);
-        if (g !== null) { gender = g; used[i] = true; continue; }
+      if (gender === null) {
+        const g = parseGenderStr(p);
+        if (g !== null) { gender = g; continue; }
       }
-      if (!used[i] && totsuki_max === null) {
-        const t = parseTotsukiStr(remaining[i]);
-        if (t !== null) { totsuki_max = t; used[i] = true; }
+      if (totsuki_max === null) {
+        const t = parseTotsukiStr(p);
+        if (t !== null) { totsuki_max = t; continue; }
       }
+      // どれにも該当しない → 名前パーツ
+      nameParts.push(p);
     }
+
+    const namePart = nameParts.join(' ') || "無名画像";
     return { name: namePart.trim(), attr: parts[attrIdx], rank, gender, totsuki_max };
   }
 
@@ -2115,6 +2159,18 @@ function getRankCategory(img) {
 }
 
 // ─── モード切り替え ───
+function handleYoninZenkouChange() {
+  const isZenkou = document.getElementById('yonin-zenkou')?.checked;
+  const row = document.getElementById('yonin-multiplayer-row');
+  if (row) {
+    row.style.display = isZenkou ? 'none' : 'flex';
+    if (isZenkou) {
+      const offRadio = document.getElementById('yonin-multiplayer-off');
+      if (offRadio) offRadio.checked = true;
+    }
+  }
+}
+
 function handleModeUI() {
   const mode = document.querySelector('input[name="mode"]:checked').value;
   const isTanki = mode === 'tanki';
@@ -2123,7 +2179,7 @@ function handleModeUI() {
   document.getElementById('tanki-controls').style.display = isTanki ? 'flex' : 'none';
   document.getElementById('normal-controls').style.display = isTanki ? 'none' : 'flex';
   document.getElementById('koban-section').style.display = 'block';
-  document.getElementById('yonin-options').style.display = isYonin ? 'block' : 'none';
+  document.getElementById('yonin-options').style.display = isYonin ? 'flex' : 'none';
 
   document.getElementById('result').innerHTML = '';
   document.getElementById('tanki-result-main').innerHTML = '';
@@ -2215,9 +2271,21 @@ function randomExtract() {
         const kouPicked = shuffled.slice(4, 8).map(img => ({ ...img, half: '後半' }));
         pickedImages = [...zenPicked, ...kouPicked];
       } else {
-        // 通常：4人固定
-        if (shuffled.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
-        pickedImages = shuffled.slice(0, 4).map(img => ({ ...img, half: null }));
+        // 通常：4人固定 or 各自4人編成
+        const mpMode = document.querySelector('input[name="multiplayer-mode"]:checked')?.value ?? 'off';
+        const partyPlayers = mpMode === 'party2' ? 2 : mpMode === 'party3' ? 3 : mpMode === 'party' ? 4 : 0;
+        if (partyPlayers > 0) {
+          // 各自4人編成: プレイヤー数分シャッフルして各4体ずつ
+          if (shuffled.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+          pickedImages = [];
+          for (let p = 0; p < partyPlayers; p++) {
+            const reshuffled = [...shuffled].sort(() => Math.random() - 0.5);
+            reshuffled.slice(0, 4).forEach(img => pickedImages.push({ ...img, half: `${p + 1}P` }));
+          }
+        } else {
+          if (shuffled.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+          pickedImages = shuffled.slice(0, 4).map(img => ({ ...img, half: null }));
+        }
       }
     } else {
       // 通常モード：1〜4枚抽出
@@ -2324,9 +2392,20 @@ function randomExtract() {
       pairFixed(shuffledImages.slice(0, 4), shuffledTexts.slice(0, 4), '前半');
       pairFixed(shuffledImages.slice(4, 8), shuffledTexts.slice(4, 8), '後半');
     } else {
-      // 通常：4人固定
-      if (shuffledImages.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
-      pairFixed(shuffledImages.slice(0, 4), shuffledTexts.slice(0, 4), null);
+      // 通常：4人固定 or 各自4人編成
+      const mpModeKoban = document.querySelector('input[name="multiplayer-mode"]:checked')?.value ?? 'off';
+      const partyPlayersKoban = mpModeKoban === 'party2' ? 2 : mpModeKoban === 'party3' ? 3 : mpModeKoban === 'party' ? 4 : 0;
+      if (partyPlayersKoban > 0) {
+        if (shuffledImages.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+        for (let p = 0; p < partyPlayersKoban; p++) {
+          const reshuffled = [...availableImages].sort(() => Math.random() - 0.5);
+          const tOffset = p * 4;
+          pairFixed(reshuffled.slice(0, 4), shuffledTexts.slice(tOffset, tOffset + 4), `${p + 1}P`);
+        }
+      } else {
+        if (shuffledImages.length < 4) return alert('4人編成モードには4枚以上の画像が必要です。');
+        pairFixed(shuffledImages.slice(0, 4), shuffledTexts.slice(0, 4), null);
+      }
     }
   } else {
     const maxCount = eligibleAttrs.length;
@@ -2402,9 +2481,16 @@ function showResultImagesOnly(images, shibariResult = null) {
 
   let html = `<h2>✅ 抽出完了 <span style="font-size:13px;font-weight:normal;color:var(--text-muted);">（弧盤なし・画像のみ）</span></h2>`;
 
+  const multiplayerMode = document.querySelector('input[name="multiplayer-mode"]:checked')?.value ?? 'off';
+  const isGroupMode  = ['party', 'party2', 'party3'].includes(multiplayerMode);
+  const playerCount  = multiplayerMode === 'party2' ? 2 : multiplayerMode === 'party3' ? 3 : 4;
+  const PLAYER_LABELS = ['1P', '2P', '3P', '4P'];
+  const PLAYER_COLORS = ['#e05050', '#4a90d9', '#44aa66', '#d4a020'];
+
   if (!hasGenderFilterIO) {
     html += summaryHtml;
 
+    // カード1枚のHTML（グループ枠内なのでPラベルはカードに不要）
     const renderImageCards = (list) => `<div class="pair-grid">` + list.map(img => {
       const col = img.attr ? attrColor(img.attr) : 'var(--border)';
       const tc  = img.attr ? attrTextColor(img.attr) : '#fff';
@@ -2412,7 +2498,7 @@ function showResultImagesOnly(images, shibariResult = null) {
       const totsukiText = totsukiSkillLabel(totsuki);
       return `<div class="pair-card">
           ${img.attr ? `<div class="pair-attr" style="background:${col};color:${tc};"><span>${img.attr}</span></div>` : ''}
-          <img src="${img.src}" alt="${img.name}">
+          ${img.src ? `<img src="${img.src}" alt="${img.name}">` : `<div class="no-image" style="flex-direction:column;gap:6px;"><span style="font-size:36px;opacity:0.25;">👤</span><span style="font-size:12px;color:var(--text-muted);">${img.name}</span></div>`}
           <div class="pair-body">
             <div class="pair-img-name">🖼 ${img.name}</div>
             ${totsukiText ? `<div style="font-size:13px;font-weight:700;color:var(--accent);margin-top:4px;">🎯 ${totsukiText}</div>` : ''}
@@ -2420,7 +2506,21 @@ function showResultImagesOnly(images, shibariResult = null) {
         </div>`;
     }).join('') + `</div>`;
 
-    if (normPicked.length > 0) html += renderImageCards(normPicked);
+    if (isGroupMode) {
+      // half値（'1P'〜'4P'）でグループ化してPごとに枠表示
+      for (let p = 0; p < playerCount; p++) {
+        const label = PLAYER_LABELS[p];
+        const group = images.filter(img => img.half === label);
+        if (group.length === 0) break;
+        const pc = PLAYER_COLORS[p];
+        html += `<div style="border:2px solid ${pc};border-radius:10px;padding:10px 12px;margin-bottom:16px;">
+          <div style="background:${pc};color:#fff;font-size:13px;font-weight:900;padding:4px 14px;border-radius:6px;display:inline-block;margin-bottom:10px;letter-spacing:0.1em;">${label}</div>`;
+        html += renderImageCards(group);
+        html += `</div>`;
+      }
+    } else {
+      if (normPicked.length > 0) html += renderImageCards(normPicked);
+    }
     if (zenPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p>` + renderImageCards(zenPicked);
     if (kouPicked.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p>` + renderImageCards(kouPicked);
   }
@@ -2435,7 +2535,7 @@ function showResult(pairs, textOnly, imageOnly, mode, shibariResult = null) {
 
   const zenpairs  = pairs.filter(p => p.half === '前半');
   const kopairs   = pairs.filter(p => p.half === '後半');
-  const normPairs = pairs.filter(p => p.half === null);
+  const normPairs = pairs.filter(p => p.half === null || (p.half && p.half.match(/^\dP$/)));
   const total = pairs.length + textOnly.length + imageOnly.length;
   // キャラ（画像あり）のみ人数カウント。弧盤テキストのみはカウントしない
   const charCount = pairs.filter(p => p.image).length + imageOnly.length;
@@ -2480,7 +2580,9 @@ function showResult(pairs, textOnly, imageOnly, mode, shibariResult = null) {
     html += summaryHtml;
 
     if (pairs.length > 0) {
-      const renderPairCards = (list) => list.map(p => {
+      const multiplayerMode = document.querySelector('input[name="multiplayer-mode"]:checked')?.value ?? 'off';
+
+      const renderPairCards = (list, startIdx = 0) => list.map((p, i) => {
         const col = attrColor(p.attr);
         const tc  = attrTextColor(p.attr);
         const totsuki = p.image ? getTotsuki(p.image) : null;
@@ -2502,7 +2604,26 @@ function showResult(pairs, textOnly, imageOnly, mode, shibariResult = null) {
           </div>`;
       }).join('');
 
-      if (normPairs.length > 0) html += `<div class="pair-grid">${renderPairCards(normPairs)}</div>`;
+      const PL = ['1P','2P','3P','4P'];
+      const PC = ['#e05050','#4a90d9','#44aa66','#d4a020'];
+      const partyPlayers = multiplayerMode === 'party2' ? 2 : multiplayerMode === 'party3' ? 3 : multiplayerMode === 'party' ? 4 : 0;
+
+      if (partyPlayers > 0) {
+        // half値('1P'〜'4P')でグループ化してPごとに枠表示
+        for (let p = 0; p < partyPlayers; p++) {
+          const label = PL[p];
+          const group = normPairs.filter(pair => pair.half === label);
+          if (group.length === 0) continue;
+          const pc = PC[p];
+          html += `<div style="border:2px solid ${pc};border-radius:10px;padding:10px;margin-bottom:16px;">
+            <div style="background:${pc};color:#fff;font-size:13px;font-weight:900;padding:4px 12px;border-radius:6px;display:inline-block;margin-bottom:8px;letter-spacing:0.1em;">${label}</div>`;
+          html += `<div class="pair-grid">${renderPairCards(group)}</div>`;
+          html += `</div>`;
+        }
+      } else {
+        const plainPairs = normPairs.filter(p => p.half === null);
+        if (plainPairs.length > 0) html += `<div class="pair-grid">${renderPairCards(plainPairs)}</div>`;
+      }
       if (zenpairs.length > 0)  html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【前半】</p><div class="pair-grid">${renderPairCards(zenpairs)}</div>`;
       if (kopairs.length > 0)   html += `<p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">【後半】</p><div class="pair-grid">${renderPairCards(kopairs)}</div>`;
     }
